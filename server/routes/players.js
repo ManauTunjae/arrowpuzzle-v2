@@ -2,6 +2,7 @@ import { Router } from 'express';
 import crypto from 'node:crypto';
 import { db } from '../db/db.js';
 import { cleanNickname } from '../validators.js';
+import { requirePlayer } from '../auth.js';
 
 const router = Router();
 
@@ -43,18 +44,8 @@ router.post('/', (req, res) => {
 });
 
 // GET /api/players/me  header: X-Player-Token -> player
-router.get('/me', (req, res) => {
-  const token = req.get('X-Player-Token');
-  if (!token) {
-    return res.status(401).json({ error: 'Missing X-Player-Token header' });
-  }
-
-  const player = db.prepare('SELECT * FROM players WHERE token = ?').get(token);
-  if (!player) {
-    return res.status(401).json({ error: 'Invalid token' });
-  }
-
-  res.json(toPlayerJson(player));
+router.get('/me', requirePlayer, (req, res) => {
+  res.json(toPlayerJson(req.player));
 });
 
 export default router;

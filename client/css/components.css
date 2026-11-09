@@ -76,3 +76,22 @@ a.button { text-align: center; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
   .snow { animation: none; }
 }
+
+/* Result page */
+.big-score { margin: 0; font-size: 2rem; font-weight: 600; color: var(--color-primary); }
+.best-score { margin: 4px 0 0; font-size: 1.125rem; font-weight: 600; }
+.card h2 { margin: 24px 0 8px; font-size: 1.125rem; color: var(--color-primary); }
+
+.leaderboard { width: 100%; border-collapse: collapse; }
+.leaderboard th, .leaderboard td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--color-line); }
+.leaderboard th:last-child, .leaderboard td:last-child { text-align: right; }
+.leaderboard__me { font-weight: 600; background: color-mix(in srgb, var(--color-glow) 20%, transparent); }
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

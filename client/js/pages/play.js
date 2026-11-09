@@ -1,7 +1,12 @@
-// Play page: connects the game to the HTML.
-import { loadCampaign } from '../theme.js';
+// Play page: connects the game to the HTML and to the server.
+import { loadCampaign, withCampaign } from '../theme.js';
+import { getToken } from '../player.js';
+import { startSession, finishSession } from '../api.js';
 import { createGame } from '../game/game.js';
 import { LEVEL_COUNT } from '../game/levels.js';
+
+// No player yet? Go to the nickname page first.
+if (!getToken()) location.replace(withCampaign('name.html'));
 
 const svg = document.querySelector('#board');
 const scoreEl = document.querySelector('#score');
@@ -11,6 +16,7 @@ const levelEl = document.querySelector('#level');
 const messageEl = document.querySelector('#message');
 const wrapEl = document.querySelector('#board-wrap');
 const startBtn = document.querySelector('#start');
+const resultLink = document.querySelector('#result-link');
 const overlay = document.querySelector('#overlay');
 const endText = document.querySelector('#end-text');
 
@@ -19,6 +25,18 @@ const END_TEXT = {
   hearts: 'Slut på hjärtan.',
   won: 'Alla nivåer klara!',
 };
+
+const RESULT_KEY = 'arrowpuzzle.lastResult';
+let sessionId = null;
+
+// The result page reads this. sessionStorage can throw, so try/catch.
+function rememberResult(result) {
+  try {
+    sessionStorage.setItem(RESULT_KEY, JSON.stringify(result));
+  } catch {
+    // The result page will then just send the player back to the game.
+  }
+}
 
 // Floating "+1" in the middle of the board. It lives outside the SVG,
 // so it is not removed when the board is drawn again.
@@ -39,6 +57,26 @@ function showPoints(points) {
   animation.onfinish = () => popup.remove();
 }
 
+// Sends the result. The server checks it before it is saved.
+async function saveResult(reason, state) {
+  const result = {
+    score: state.score,
+    candlesLit: state.candlesLit,
+    levelsCleared: state.levelsCleared,
+    heartsLeft: state.hearts,
+  };
+  const saved = { ...result, reason, saved: false, best: null, error: null };
+  try {
+    if (!sessionId) throw new Error('No session');
+    const response = await finishSession(sessionId, result);
+    saved.saved = true;
+    saved.best = response.best;
+  } catch (error) {
+    saved.error = error.message;
+  }
+  rememberResult(saved);
+}
+
 const game = createGame({
   svg,
   onState(state, levelNumber) {
@@ -53,16 +91,41 @@ const game = createGame({
     messageEl.textContent = text;
   },
   onPoints: showPoints,
-  onEnd({ reason, state }) {
+  async onEnd({ reason, state }) {
     messageEl.textContent = '';
     endText.textContent = `${END_TEXT[reason]} Du fick ${state.score} poäng.`;
-    startBtn.textContent = 'Spela igen';
+    startBtn.hidden = true;
+    resultLink.hidden = true;
     overlay.hidden = false;
-    startBtn.focus();
+
+    await saveResult(reason, state); // wait, so the result page has the answer
+
+    resultLink.href = withCampaign('result.html');
+    resultLink.hidden = false;
+    startBtn.textContent = 'Spela igen';
+    startBtn.hidden = false;
+    resultLink.focus();
   },
 });
 
-startBtn.addEventListener('click', () => {
+startBtn.addEventListener('click', async () => {
+  startBtn.disabled = true; // avoid double click
+  messageEl.textContent = '';
+  try {
+    const session = await startSession();
+    sessionId = session.id;
+  } catch (error) {
+    startBtn.disabled = false;
+    if (error.status === 401) {
+      location.replace(withCampaign('name.html')); // token is not valid any more
+      return;
+    }
+    messageEl.textContent = error.message;
+    return;
+  }
+  startBtn.disabled = false;
+  endText.textContent = '';
+  resultLink.hidden = true;
   overlay.hidden = true;
   game.start();
 });

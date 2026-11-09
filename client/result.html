@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Resultat – Tänd ett ljus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1 id="heading">Ditt resultat</h1>
+      <p class="big-score">Senaste: <span id="score">0</span> poäng</p>
+      <p id="best-line" class="best-score" hidden>Ditt bästa: <span id="best">0</span> poäng</p>
+      <p id="note" class="form-error" role="status"></p>
+
+      <h2>Topplista</h2>
+      <p id="leaderboard-status">Laddar…</p>
+      <table id="leaderboard" class="leaderboard" hidden>
+        <caption class="visually-hidden">Topp 10</caption>
+        <thead>
+          <tr><th scope="col">Plats</th><th scope="col">Namn</th><th scope="col">Poäng</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+
+      <a id="again" class="button button--primary" href="play.html">Spela igen</a>
+    </div>
+  </main>
+  <script type="module" src="js/pages/result.js"></script>
+</body>
+</html>
