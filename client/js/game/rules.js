@@ -125,3 +125,47 @@ export function isLevelCleared(state) {
 export function isGameOver(state, timeLeftMs) {
   return timeLeftMs <= 0 || state.hearts <= 0;
 }
+
+// --- Level checks (used by tests, and later by the server for max score) ---
+
+// Returns a list of problems. Empty list = valid level.
+export function validateLevel(matches, size) {
+  const problems = [];
+  const taken = new Map();
+  for (const match of matches) {
+    if (!DIRECTIONS[match.dir]) problems.push(`match ${match.id}: bad dir`);
+    if (!Number.isInteger(match.length) || match.length < 1) {
+      problems.push(`match ${match.id}: bad length`);
+      continue;
+    }
+    for (const cell of DIRECTIONS[match.dir] ? cellsOf(match) : []) {
+      if (cell.x < 0 || cell.x >= size || cell.y < 0 || cell.y >= size) {
+        problems.push(`match ${match.id}: outside board at ${cell.x},${cell.y}`);
+      }
+      const key = `${cell.x},${cell.y}`;
+      if (taken.has(key)) {
+        problems.push(`match ${match.id} overlaps match ${taken.get(key)} at ${key}`);
+      }
+      taken.set(key, match.id);
+    }
+  }
+  const ids = new Set(matches.map((m) => m.id));
+  if (ids.size !== matches.length) problems.push('duplicate ids');
+  return problems;
+}
+
+// Removing a match only frees space, so greedy is enough:
+// keep removing any match that can exit. If the board gets empty, it is solvable.
+export function isSolvable(matches, size) {
+  let left = [...matches];
+  let progress = true;
+  while (left.length > 0 && progress) {
+    progress = false;
+    const free = left.find((m) => canExit(m, left, size));
+    if (free) {
+      left = left.filter((m) => m.id !== free.id);
+      progress = true;
+    }
+  }
+  return left.length === 0;
+}
