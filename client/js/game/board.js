@@ -1,12 +1,12 @@
 // Draws the board as SVG. No game rules here, only drawing + click events.
-import { cellsOf, DIRECTIONS, CANDLE_BY_DIR } from './rules.js';
+import { cellsOf, DIRECTIONS } from './rules.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const CELL = 60;     // size of one cell in SVG units
 const MARGIN = 70;   // space around the board for the candles
 const END_PAD = 8;    // space at the ends of a match (along its length)
-const SIDE_PAD = 21; // space at the sides (makes the match thin)
-const HEAD_R = 12;   // red head is a bit wider than the stick, like a real match
+const SIDE_PAD = 24; // space at the sides (makes the match thin)
+const HEAD_R = 9;     // red head is a bit wider than the stick, like a real match
 
 const DIR_TEXT = { up: 'uppåt', down: 'nedåt', left: 'vänster', right: 'höger' };
 
@@ -25,10 +25,10 @@ function drawCandle(parent, number, x, y, angle, lit) {
     transform: `translate(${x} ${y}) rotate(${angle})`,
     'data-candle': number,
   }, parent);
-  el('ellipse', { class: 'candle__aura', cx: 0, cy: 0, rx: 30, ry: 42 }, g);
-  el('rect', { class: 'candle__body', x: -10, y: -10, width: 20, height: 36, rx: 4 }, g);
-  el('line', { class: 'candle__wick', x1: 0, y1: -10, x2: 0, y2: -16 }, g);
-  el('path', { class: 'candle__flame', d: 'M0 -40 C9 -30 9 -22 0 -17 C-9 -22 -9 -30 0 -40 Z' }, g);
+  el('ellipse', { class: 'candle__glow', cx: 0, cy: -10, rx: 24, ry: 38 }, g);
+  el('rect', { class: 'candle__body', x: -9, y: -14, width: 18, height: 34, rx: 3 }, g);
+  el('line', { class: 'candle__wick', x1: 0, y1: -14, x2: 0, y2: -20 }, g);
+  el('ellipse', { class: 'candle__flame', cx: 0, cy: -29, rx: 7, ry: 11 }, g);
 }
 
 function drawMatch(parent, match, onClick) {
@@ -105,10 +105,10 @@ export function renderBoard(svg, state, onMatchClick) {
   const mid = total / 2;
   const edge = MARGIN / 2 + 6;
   const lit = (n) => state.litCandles.includes(n);
-  drawCandle(svg, CANDLE_BY_DIR.up, mid, edge, 0, lit(1));
-  drawCandle(svg, CANDLE_BY_DIR.right, total - edge, mid, 90, lit(2));
-  drawCandle(svg, CANDLE_BY_DIR.down, mid, total - edge, 180, lit(3));
-  drawCandle(svg, CANDLE_BY_DIR.left, edge, mid, 270, lit(4));
+  drawCandle(svg, 1, mid, edge, 0, lit(1));
+  drawCandle(svg, 2, total - edge, mid, 90, lit(2));
+  drawCandle(svg, 3, mid, total - edge, 180, lit(3));
+  drawCandle(svg, 4, edge, mid, 270, lit(4));
 
   for (const match of state.matches) drawMatch(svg, match, onMatchClick);
 }

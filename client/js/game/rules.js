@@ -11,8 +11,9 @@ export const DIRECTIONS = {
   right: { dx: 1, dy: 0 },
 };
 
-// The side the match leaves on = the candle that is lit.
-export const CANDLE_BY_DIR = { up: 1, right: 2, down: 3, left: 4 };
+// Candles are lit in order: the 1st correct match lights candle 1, the 2nd lights
+// candle 2, and so on. Candle positions: 1 = up, 2 = right, 3 = down, 4 = left.
+export const CANDLE_COUNT = 4;
 
 export const POINTS = {
   perCandle: 1,
@@ -52,17 +53,13 @@ export function canExit(match, matches, size) {
   return true;
 }
 
-export function candleFor(match) {
-  return CANDLE_BY_DIR[match.dir];
-}
-
 // --- Game state (never changed in place, we return a new object) ---
 
 export function createState(matches, size) {
   return {
     size,
     matches,            // matches still on the board
-    litCandles: [],     // which of the 4 candles have burned (no duplicates)
+    litCandles: [],     // candles that burn: [1], [1, 2], ... up to [1, 2, 3, 4]
     candlesLit: 0,      // +1 every time a match leaves
     score: 0,
     hearts: MAX_HEARTS,
@@ -82,15 +79,15 @@ export function clickMatch(state, matchId) {
     return { state: { ...state, hearts: state.hearts - 1 }, result: 'collision' };
   }
 
-  const candle = candleFor(match);
-  const litCandles = state.litCandles.includes(candle)
-    ? state.litCandles
-    : [...state.litCandles, candle];
+  // Next candle in order. After all 4 are lit, more matches only give +1 point.
+  const litCandles = state.litCandles.length < CANDLE_COUNT
+    ? [...state.litCandles, state.litCandles.length + 1]
+    : state.litCandles;
 
   let score = state.score + POINTS.perCandle;
 
   let allCandlesBonusGiven = state.allCandlesBonusGiven;
-  if (!allCandlesBonusGiven && litCandles.length === 4) {
+  if (!allCandlesBonusGiven && litCandles.length === CANDLE_COUNT) {
     score += POINTS.allCandlesBonus;
     allCandlesBonusGiven = true;
   }

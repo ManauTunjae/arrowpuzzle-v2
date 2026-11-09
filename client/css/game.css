@@ -37,15 +37,14 @@ body.game {
 .match:hover .match__body,
 .match:focus-visible .match__body { stroke: var(--color-glow); stroke-width: 3; }
 
-/* Candles: the whole candle glows when it is lit */
-.candle__aura { fill: var(--color-glow); opacity: 0; }
-.candle__body { fill: var(--color-line); opacity: 0.35; }
-.candle__wick { stroke: var(--color-line); stroke-width: 2; opacity: 0.6; }
+/* Candles: same look as before. When lit, the whole candle glows. */
+.candle__body { fill: var(--color-card); opacity: 0.45; }
+.candle__wick { stroke: var(--color-line); stroke-width: 2; }
 .candle__flame { fill: var(--color-glow); opacity: 0; }
-.candle--lit .candle__aura { opacity: 0.28; }
-.candle--lit .candle__body { fill: var(--color-glow); opacity: 1; }
-.candle--lit .candle__wick { stroke: var(--color-text); opacity: 1; }
+.candle__glow { fill: var(--color-glow); opacity: 0; }
+.candle--lit .candle__body { opacity: 1; filter: drop-shadow(0 0 8px var(--color-glow)); }
 .candle--lit .candle__flame { opacity: 1; filter: drop-shadow(0 0 6px var(--color-glow)); }
+.candle--lit .candle__glow { opacity: 0.3; }
 
 /* Floating points in the middle of the board */
 .board-wrap { position: relative; max-width: 560px; margin: 0 auto; }

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  cellsOf, canExit, candleFor, createState, clickMatch, isLevelCleared, isGameOver,
+  cellsOf, canExit, createState, clickMatch, isLevelCleared, isGameOver,
 } from '../client/js/game/rules.js';
 
 const SIZE = 5;
@@ -38,13 +38,6 @@ test('canExit: its own body never blocks', () => {
   assert.equal(canExit(a, [a], SIZE), true);
 });
 
-test('candleFor: up 1, right 2, down 3, left 4', () => {
-  assert.equal(candleFor({ dir: 'up' }), 1);
-  assert.equal(candleFor({ dir: 'right' }), 2);
-  assert.equal(candleFor({ dir: 'down' }), 3);
-  assert.equal(candleFor({ dir: 'left' }), 4);
-});
-
 test('clickMatch: collision costs a heart, no minus points', () => {
   const a = { id: 1, x: 1, y: 2, length: 2, dir: 'right' };
   const blocker = { id: 2, x: 3, y: 2, length: 1, dir: 'up' };
@@ -63,7 +56,7 @@ test('clickMatch: exit gives +1 and removes the match', () => {
   assert.equal(result, 'exit');
   assert.equal(state.score, 1);
   assert.equal(state.candlesLit, 1);
-  assert.deepEqual(state.litCandles, [2]);
+  assert.deepEqual(state.litCandles, [1]);
   assert.equal(state.matches.length, 1);
 });
 
@@ -97,6 +90,36 @@ test('clickMatch: all-candles bonus is only given once', () => {
   const before = state.score; // 4 + 5 = 9
   state = clickMatch(state, 5).state;
   assert.equal(state.score, before + 1 + 3); // +1 candle, +3 level, no second bonus
+});
+
+test('clickMatch: candles are lit in order, no matter which way the match points', () => {
+  const matches = [
+    { id: 1, x: 0, y: 0, length: 1, dir: 'left' },
+    { id: 2, x: 4, y: 4, length: 1, dir: 'down' },
+    { id: 3, x: 2, y: 0, length: 1, dir: 'up' },
+  ];
+  let state = createState(matches, SIZE);
+  state = clickMatch(state, 1).state;
+  assert.deepEqual(state.litCandles, [1]);
+  state = clickMatch(state, 2).state;
+  assert.deepEqual(state.litCandles, [1, 2]);
+  state = clickMatch(state, 3).state;
+  assert.deepEqual(state.litCandles, [1, 2, 3]);
+});
+
+test('clickMatch: a collision does not light a candle', () => {
+  const a = { id: 1, x: 1, y: 2, length: 2, dir: 'right' };
+  const blocker = { id: 2, x: 3, y: 2, length: 1, dir: 'up' };
+  const { state } = clickMatch(createState([a, blocker], SIZE), 1);
+  assert.deepEqual(state.litCandles, []);
+});
+
+test('clickMatch: after 4 candles there is no 5th, only +1 point', () => {
+  const matches = [1, 2, 3, 4, 5].map((id) => ({ id, x: 0, y: id - 1, length: 1, dir: 'left' }));
+  let state = createState(matches, SIZE);
+  for (const id of [1, 2, 3, 4, 5]) state = clickMatch(state, id).state;
+  assert.deepEqual(state.litCandles, [1, 2, 3, 4]);
+  assert.equal(state.candlesLit, 5);
 });
 
 test('clickMatch: unknown id or no hearts is ignored', () => {
