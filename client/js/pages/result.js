@@ -27,6 +27,13 @@ const table = document.querySelector('#leaderboard');
 const tbody = table.querySelector('tbody');
 document.querySelector('#again').href = withCampaign('play.html');
 
+// The gift page needs a saved game, because the gift is linked to it.
+const donateLink = document.querySelector('#donate');
+if (result?.saved) {
+  donateLink.href = withCampaign('donate.html');
+  donateLink.hidden = false;
+}
+
 scoreEl.textContent = result?.score ?? 0;
 if (result && Number.isInteger(result.best)) {
   bestEl.textContent = result.best;

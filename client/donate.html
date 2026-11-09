@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ge en gåva – Tänd ett ljus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <main>
+    <div class="card">
+      <p class="simulation-note">Det här är en simulering. Ingen riktig betalning sker.</p>
+
+      <!-- Step 1: choose an amount -->
+      <section id="step-choose">
+        <h1 tabindex="-1">Ge en gåva</h1>
+        <p id="intro"></p>
+        <form id="amount-form" novalidate>
+          <fieldset class="amounts">
+            <legend>Välj belopp</legend>
+            <div id="amount-options" class="amounts__options"></div>
+          </fieldset>
+          <p id="error" class="form-error" role="alert"></p>
+          <button class="button button--primary" type="submit" id="continue">Fortsätt</button>
+        </form>
+      </section>
+
+      <!-- Step 2: pay (QR on computer, button on phone) -->
+      <section id="step-pay" hidden>
+        <h1 tabindex="-1">Betala med Swish</h1>
+        <p id="pay-summary"></p>
+        <div id="qr-box" hidden>
+          <img id="qr" alt="Swish QR-kod. Skanna den med Swish-appen." width="220" height="220">
+          <p>Skanna koden med Swish-appen i din telefon.</p>
+        </div>
+        <a id="open-swish" class="button button--primary" href="#" hidden>Öppna Swish</a>
+        <p id="pay-error" class="form-error" role="alert"></p>
+        <button id="simulate" class="button button--secondary" type="button">Simulera betalning</button>
+      </section>
+
+      <!-- Step 3: done -->
+      <section id="step-done" hidden>
+        <h1 tabindex="-1">Tack!</h1>
+        <p id="done-text"></p>
+        <a id="back" class="button button--primary" href="result.html">Till resultatet</a>
+      </section>
+    </div>
+  </main>
+  <script type="module" src="js/pages/donate.js"></script>
+</body>
+</html>
