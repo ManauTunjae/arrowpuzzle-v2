@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Smeknamn – Tänd ett ljus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1>Vad heter du?</h1>
+      <p>Ett smeknamn räcker. Det visas på topplistan.</p>
+      <form id="name-form" novalidate>
+        <div class="field">
+          <label for="nickname">Smeknamn</label>
+          <input id="nickname" name="nickname" type="text" minlength="2" maxlength="20"
+                 autocomplete="nickname" required aria-describedby="nickname-hint error">
+          <p id="nickname-hint" class="field__hint">2–20 tecken.</p>
+        </div>
+        <p id="error" class="form-error" role="alert"></p>
+        <button id="submit" class="button button--primary" type="submit">Fortsätt</button>
+      </form>
+    </div>
+  </main>
+  <script type="module" src="js/pages/name.js"></script>
+</body>
+</html>

@@ -8,12 +8,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
   <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
 </head>
 <body>
   <main>
+    <header class="hero">
+      <div class="snow" aria-hidden="true"></div>
+      <div class="hero__content">
+        <p class="hero__org" id="org"></p>
+        <h1 id="title">Tänd ett ljus</h1>
+      </div>
+    </header>
     <div class="card">
-      <h1 id="title">Tänd ett ljus</h1>
       <p id="intro">Laddar…</p>
+      <a id="start" class="button button--primary" href="name.html">Starta</a>
     </div>
   </main>
   <script type="module" src="js/pages/start.js"></script>

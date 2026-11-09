@@ -15,3 +15,64 @@
 .button:hover { filter: brightness(1.08); }
 .button:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 3px; }
 .button[hidden] { display: none; }
+
+/* Forms */
+.field { margin-top: 16px; }
+.field label { display: block; margin-bottom: 6px; font-weight: 600; }
+.field input {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-card);
+  border: 2px solid var(--color-line);
+  border-radius: 10px;
+}
+.field input:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 2px; border-color: var(--color-primary); }
+.field__hint { margin: 6px 0 0; font-size: 0.875rem; }
+.form-error { min-height: 1.5em; margin: 12px 0 0; color: var(--color-accent); font-weight: 600; }
+
+.button--primary { background: var(--color-primary); }
+.card .button { width: 100%; }
+
+/* Link that looks like a button */
+a.button { text-align: center; text-decoration: none; }
+
+/* Instruction list */
+.steps { padding-left: 20px; line-height: 1.5; }
+.steps li { margin-bottom: 10px; }
+
+/* Start page: green hero with falling snow */
+.hero {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 16px;
+  padding: 48px 24px;
+  text-align: center;
+  color: var(--color-card);
+  background: var(--color-primary);
+  border-radius: 16px;
+}
+.hero h1 { margin: 0; color: var(--color-card); font-size: 2.25rem; }
+.hero__content { position: relative; }
+.hero__org { margin: 0 0 8px; color: var(--color-glow); font-weight: 600; letter-spacing: 0.04em; }
+
+/* Snow: three layers of dots that move down. Pure CSS. */
+.snow {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle, rgba(255, 255, 255, 0.9) 2px, transparent 2.5px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.7) 1.5px, transparent 2px),
+    radial-gradient(circle, rgba(255, 255, 255, 0.5) 1px, transparent 1.5px);
+  background-size: 110px 130px, 160px 180px, 70px 90px;
+  background-position: 10px 0, 60px 0, 30px 0;
+  animation: snow-fall 14s linear infinite;
+}
+@keyframes snow-fall {
+  to { background-position: 10px 130px, 60px 180px, 30px 90px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .snow { animation: none; }
+}
