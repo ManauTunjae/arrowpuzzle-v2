@@ -18,17 +18,16 @@ function el(name, attrs = {}, parent) {
 }
 
 // One candle, drawn "pointing up". The group is rotated to its side.
-// When lit, the whole candle glows (see game.css).
 function drawCandle(parent, number, x, y, angle, lit) {
   const g = el('g', {
     class: lit ? 'candle candle--lit' : 'candle',
     transform: `translate(${x} ${y}) rotate(${angle})`,
     'data-candle': number,
   }, parent);
-  el('ellipse', { class: 'candle__glow', cx: 0, cy: -10, rx: 24, ry: 38 }, g);
   el('rect', { class: 'candle__body', x: -9, y: -14, width: 18, height: 34, rx: 3 }, g);
   el('line', { class: 'candle__wick', x1: 0, y1: -14, x2: 0, y2: -20 }, g);
   el('ellipse', { class: 'candle__flame', cx: 0, cy: -29, rx: 7, ry: 11 }, g);
+  el('ellipse', { class: 'candle__glow', cx: 0, cy: -29, rx: 18, ry: 22 }, g);
 }
 
 function drawMatch(parent, match, onClick) {
@@ -111,4 +110,49 @@ export function renderBoard(svg, state, onMatchClick) {
   drawCandle(svg, 4, edge, mid, 270, lit(4));
 
   for (const match of state.matches) drawMatch(svg, match, onMatchClick);
+}
+
+// --- Animations (Web Animations API). Each returns a Promise that is done when it ends. ---
+
+const reduceMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+function matchElement(svg, id) {
+  return svg.querySelector(`.match[data-id="${id}"]`);
+}
+
+// The match slides out over the edge of the board, in the direction of its head.
+export function animateExit(svg, match, size) {
+  const node = matchElement(svg, match.id);
+  if (!node) return Promise.resolve();
+
+  const { dx, dy } = DIRECTIONS[match.dir];
+  const stepsToEdge = { up: match.y, down: size - 1 - match.y, left: match.x, right: size - 1 - match.x }[match.dir];
+  // Head to the edge + the whole length of the match + 1 cell, so it is fully gone.
+  const distance = (stepsToEdge + match.length + 1) * CELL;
+  const duration = reduceMotion() ? 1 : 300 + stepsToEdge * 50;
+
+  node.style.pointerEvents = 'none';
+  const animation = node.animate(
+    [
+      { transform: 'translate(0px, 0px)', opacity: 1 },
+      { transform: `translate(${dx * distance * 0.85}px, ${dy * distance * 0.85}px)`, opacity: 1, offset: 0.85 },
+      { transform: `translate(${dx * distance}px, ${dy * distance}px)`, opacity: 0 },
+    ],
+    { duration, easing: 'ease-in', fill: 'forwards' },
+  );
+  return animation.finished.catch(() => {});
+}
+
+// Collision: the match shakes back and forth along its direction.
+export function animateShake(svg, match) {
+  const node = matchElement(svg, match.id);
+  if (!node) return Promise.resolve();
+
+  const { dx, dy } = DIRECTIONS[match.dir];
+  const at = (px) => ({ transform: `translate(${dx * px}px, ${dy * px}px)` });
+  const animation = node.animate(
+    [at(0), at(8), at(-8), at(6), at(-6), at(3), at(0)],
+    { duration: reduceMotion() ? 1 : 350, easing: 'ease-in-out' },
+  );
+  return animation.finished.catch(() => {});
 }

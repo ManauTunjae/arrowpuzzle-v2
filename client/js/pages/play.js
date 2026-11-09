@@ -1,8 +1,8 @@
-// Play page. Step 1: static board you can click. Animations and timer come later.
+// Play page: one level for now. The timer and more levels come later.
 import { loadCampaign } from '../theme.js';
 import { getLevel } from '../game/levels.js';
 import { createState, clickMatch, isLevelCleared } from '../game/rules.js';
-import { renderBoard } from '../game/board.js';
+import { renderBoard, animateExit, animateShake } from '../game/board.js';
 
 const svg = document.querySelector('#board');
 const scoreEl = document.querySelector('#score');
@@ -13,10 +13,16 @@ const wrapEl = document.querySelector('#board-wrap');
 const level = getLevel(1);
 let state = createState(level.matches, level.size);
 
-function update() {
-  renderBoard(svg, state, onMatchClick);
+let busy = false; // true while an animation runs, so clicks are ignored
+
+function renderHud() {
   scoreEl.textContent = state.score;
   heartsEl.textContent = '♥'.repeat(state.hearts) || '0';
+}
+
+function update() {
+  renderBoard(svg, state, onMatchClick);
+  renderHud();
   if (isLevelCleared(state)) messageEl.textContent = 'Nivå klar!';
   else if (state.hearts <= 0) messageEl.textContent = 'Slut på hjärtan.';
 }
@@ -39,14 +45,31 @@ function showPoints(points) {
   animation.onfinish = () => popup.remove();
 }
 
-function onMatchClick(id) {
+async function onMatchClick(id) {
+  if (busy) return;
+  const match = state.matches.find((m) => m.id === id);
   const { state: next, result } = clickMatch(state, id);
+  if (!match || result === 'ignored') return;
+
+  busy = true;
   const gained = next.score - state.score;
-  state = next;
-  if (result === 'collision') messageEl.textContent = 'Aj! Något står i vägen.';
-  else if (result === 'exit') messageEl.textContent = '';
-  update();
-  if (gained > 0) showPoints(gained);
+
+  if (result === 'collision') {
+    // Update hearts at once, but do not redraw the board (that would stop the shake).
+    state = next;
+    renderHud();
+    messageEl.textContent = 'Aj! Något står i vägen.';
+    await animateShake(svg, match);
+    if (state.hearts <= 0) messageEl.textContent = 'Slut på hjärtan.';
+  } else {
+    messageEl.textContent = '';
+    await animateExit(svg, match, state.size);
+    state = next;
+    update();
+    if (gained > 0) showPoints(gained);
+  }
+
+  busy = false;
 }
 
 try {
