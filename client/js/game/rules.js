@@ -114,6 +114,11 @@ export function clickMatch(state, matchId) {
   };
 }
 
+// New level, but score, hearts and candles are kept (one game = 3 levels).
+export function nextLevelState(state, level) {
+  return { ...state, size: level.size, matches: level.matches };
+}
+
 export function isLevelCleared(state) {
   return state.matches.length === 0;
 }

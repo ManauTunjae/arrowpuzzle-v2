@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  cellsOf, canExit, createState, clickMatch, isLevelCleared, isGameOver,
+  cellsOf, canExit, createState, clickMatch, nextLevelState, isLevelCleared, isGameOver,
 } from '../client/js/game/rules.js';
 
 const SIZE = 5;
@@ -134,4 +134,19 @@ test('isGameOver: timer 0 or hearts 0', () => {
   assert.equal(isGameOver(state, 5000), false);
   assert.equal(isGameOver(state, 0), true);
   assert.equal(isGameOver({ ...state, hearts: 0 }, 5000), true);
+});
+
+test('nextLevelState: new board, but score, hearts and candles are kept', () => {
+  const a = { id: 1, x: 0, y: 0, length: 1, dir: 'up' };
+  let state = createState([a], SIZE);
+  state = clickMatch(state, 1).state;
+  state = { ...state, hearts: 2 };
+  const level = { size: 6, matches: [{ id: 1, x: 5, y: 5, length: 1, dir: 'down' }] };
+  const next = nextLevelState(state, level);
+  assert.equal(next.size, 6);
+  assert.equal(next.matches.length, 1);
+  assert.equal(next.score, state.score);
+  assert.equal(next.hearts, 2);
+  assert.deepEqual(next.litCandles, [1]);
+  assert.equal(next.levelsCleared, state.levelsCleared);
 });
