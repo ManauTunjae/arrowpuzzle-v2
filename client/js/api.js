@@ -17,7 +17,9 @@ async function request(path, options = {}) {
   // The server always answers with JSON, also for errors.
   const data = await response.json().catch(() => ({}));
   if (!response.ok) {
-    throw new Error(data.error || `Request failed (${response.status})`);
+    const error = new Error(data.error || `Request failed (${response.status})`);
+    error.status = response.status; // pages can react to 401 etc.
+    throw error;
   }
   return data;
 }
@@ -29,3 +31,11 @@ export const createPlayer = (campaignSlug, nickname) =>
   request('/api/players', { method: 'POST', body: { campaignSlug, nickname } });
 
 export const getMe = () => request('/api/players/me');
+
+export const startSession = () => request('/api/sessions', { method: 'POST' });
+
+export const finishSession = (id, result) =>
+  request(`/api/sessions/${id}`, { method: 'PATCH', body: result });
+
+export const getLeaderboard = (slug) =>
+  request(`/api/campaigns/${encodeURIComponent(slug)}/leaderboard`);
