@@ -6,6 +6,7 @@ import playersRouter from './routes/players.js';
 import sessionsRouter from './routes/sessions.js';
 import donationsRouter from './routes/donations.js';
 import { invitesApi, inviteLink } from './routes/invites.js';
+import leadsRouter from './routes/leads.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -23,6 +24,7 @@ app.use('/api/sessions', sessionsRouter);
 app.use('/api/donations', donationsRouter);
 app.use('/api/invites', invitesApi);
 app.use('/i', inviteLink);
+app.use('/api/leads', leadsRouter);
 
 // Express also serves the files in client/.
 app.use(express.static(path.join(rootDir, 'client')));

@@ -57,3 +57,6 @@ export async function getDonationQr(id) {
   if (!response.ok) throw new Error('Kunde inte hämta QR-koden');
   return URL.createObjectURL(await response.blob());
 }
+
+export const createLead = (phone, consent) =>
+  request('/api/leads', { method: 'POST', body: { phone, consent } });

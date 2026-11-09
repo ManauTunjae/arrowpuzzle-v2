@@ -144,3 +144,9 @@ a.button { text-align: center; text-decoration: none; }
 }
 .field textarea:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 2px; border-color: var(--color-primary); }
 .card .button + .button { margin-top: 10px; }
+
+/* Checkbox with a label next to it */
+.field--check { display: flex; gap: 12px; align-items: flex-start; }
+.field--check input { flex: none; width: 24px; height: 24px; margin-top: 2px; accent-color: var(--color-primary); }
+.field--check label { margin: 0; font-weight: 400; line-height: 1.4; }
+.field--check input:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 2px; }

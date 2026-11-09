@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Få ett SMS – Tänd ett ljus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <main>
+    <div class="card">
+      <p class="simulation-note">Det här är en simulering. Inga riktiga SMS skickas.</p>
+      <h1>Vill du få ett SMS?</h1>
+      <p id="intro">Få ett SMS när kampanjen nått sitt mål. Skriv ditt eget nummer. Det är helt frivilligt.</p>
+      <form id="sms-form" novalidate>
+        <div class="field">
+          <label for="phone">Ditt mobilnummer</label>
+          <input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
+                 placeholder="070 123 45 67" aria-describedby="phone-hint error">
+          <p id="phone-hint" class="field__hint">Ett svenskt mobilnummer, till exempel 070 123 45 67.</p>
+        </div>
+        <div class="field field--check">
+          <input id="consent" name="consent" type="checkbox">
+          <label for="consent" id="consent-label"></label>
+        </div>
+        <p id="error" class="form-error" role="alert"></p>
+        <button id="submit" class="button button--primary" type="submit">Skicka</button>
+      </form>
+      <a id="skip" class="button button--secondary" href="thanks.html">Hoppa över</a>
+    </div>
+  </main>
+  <script type="module" src="js/pages/sms.js"></script>
+</body>
+</html>
