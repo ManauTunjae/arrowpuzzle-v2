@@ -1,0 +1,17 @@
+/* Shared components. Colors only through var(--color-...). */
+.button {
+  display: block;
+  margin: 16px auto 0;
+  padding: 12px 28px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-card);
+  background: var(--color-accent);
+  border: 2px solid transparent;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.button:hover { filter: brightness(1.08); }
+.button:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 3px; }
+.button[hidden] { display: none; }
