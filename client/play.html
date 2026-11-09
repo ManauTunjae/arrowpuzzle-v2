@@ -13,6 +13,7 @@
 </head>
 <body class="game">
   <main>
+    <div class="game-area">
     <div class="hud">
       <div class="hud__item"><span class="hud__label">Tid</span><span class="hud__value" id="time">30</span></div>
       <div class="hud__item"><span class="hud__label">Nivå</span><span class="hud__value" id="level">1/3</span></div>
@@ -23,11 +24,11 @@
       <svg id="board" class="game-board" role="group" aria-label="Spelbräde"></svg>
       <div class="board-overlay" id="overlay">
         <p id="end-text" class="board-overlay__text"></p>
-        <a id="result-link" class="button button--primary" href="result.html" hidden>Se resultat</a>
         <button id="start" class="button" type="button">Starta</button>
       </div>
     </div>
     <p id="message" class="game-message" role="status"></p>
+    </div>
   </main>
   <script type="module" src="js/pages/play.js"></script>
 </body>

@@ -16,7 +16,6 @@ const levelEl = document.querySelector('#level');
 const messageEl = document.querySelector('#message');
 const wrapEl = document.querySelector('#board-wrap');
 const startBtn = document.querySelector('#start');
-const resultLink = document.querySelector('#result-link');
 const overlay = document.querySelector('#overlay');
 const endText = document.querySelector('#end-text');
 
@@ -28,6 +27,9 @@ const END_TEXT = {
 
 const RESULT_KEY = 'arrowpuzzle.lastResult';
 let sessionId = null;
+
+const RESULT_DELAY_MS = 1800;
+const sleep = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
 // The result page reads this. sessionStorage can throw, so try/catch.
 function rememberResult(result) {
@@ -95,16 +97,11 @@ const game = createGame({
     messageEl.textContent = '';
     endText.textContent = `${END_TEXT[reason]} Du fick ${state.score} poäng.`;
     startBtn.hidden = true;
-    resultLink.hidden = true;
     overlay.hidden = false;
 
-    await saveResult(reason, state); // wait, so the result page has the answer
-
-    resultLink.href = withCampaign('result.html');
-    resultLink.hidden = false;
-    startBtn.textContent = 'Spela igen';
-    startBtn.hidden = false;
-    resultLink.focus();
+    // Save the result, but also wait a moment, so the player can read why the game ended.
+    await Promise.all([saveResult(reason, state), sleep(RESULT_DELAY_MS)]);
+    location.href = withCampaign('result.html');
   },
 });
 
@@ -125,7 +122,6 @@ startBtn.addEventListener('click', async () => {
   }
   startBtn.disabled = false;
   endText.textContent = '';
-  resultLink.hidden = true;
   overlay.hidden = true;
   game.start();
 });
@@ -135,3 +131,8 @@ try {
 } catch {
   // Game still works with default colors.
 }
+
+// Back button can show this page again from memory, with the old end screen. Start fresh.
+window.addEventListener('pageshow', (event) => {
+  if (event.persisted) location.reload();
+});
