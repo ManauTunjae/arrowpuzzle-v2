@@ -65,11 +65,12 @@ async function saveResult(reason, state) {
     levelsCleared: state.levelsCleared,
     heartsLeft: state.hearts,
   };
-  const saved = { ...result, reason, saved: false, error: null };
+  const saved = { ...result, reason, saved: false, best: null, error: null };
   try {
     if (!sessionId) throw new Error('No session');
-    await finishSession(sessionId, result);
+    const response = await finishSession(sessionId, result);
     saved.saved = true;
+    saved.best = response.best;
   } catch (error) {
     saved.error = error.message;
   }

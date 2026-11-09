@@ -79,6 +79,7 @@ a.button { text-align: center; text-decoration: none; }
 
 /* Result page */
 .big-score { margin: 0; font-size: 2rem; font-weight: 600; color: var(--color-primary); }
+.best-score { margin: 4px 0 0; font-size: 1.125rem; font-weight: 600; }
 .card h2 { margin: 24px 0 8px; font-size: 1.125rem; color: var(--color-primary); }
 
 .leaderboard { width: 100%; border-collapse: collapse; }

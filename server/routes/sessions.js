@@ -56,7 +56,12 @@ router.patch('/:id', (req, res) => {
      WHERE id = ?`,
   ).run(score, candlesLit, levelsCleared, heartsLeft, level, finishedAt.toISOString(), id);
 
-  res.json({ id, score, candlesLit, levelsCleared, heartsLeft, level });
+  // The player's best finished game (this one included).
+  const { best } = db
+    .prepare('SELECT MAX(score) AS best FROM game_sessions WHERE player_id = ? AND finished_at IS NOT NULL')
+    .get(req.player.id);
+
+  res.json({ id, score, candlesLit, levelsCleared, heartsLeft, level, best });
 });
 
 export default router;

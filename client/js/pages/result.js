@@ -19,6 +19,8 @@ if (!getToken() || !result) {
 }
 
 const scoreEl = document.querySelector('#score');
+const bestLine = document.querySelector('#best-line');
+const bestEl = document.querySelector('#best');
 const noteEl = document.querySelector('#note');
 const statusEl = document.querySelector('#leaderboard-status');
 const table = document.querySelector('#leaderboard');
@@ -26,6 +28,10 @@ const tbody = table.querySelector('tbody');
 document.querySelector('#again').href = withCampaign('play.html');
 
 scoreEl.textContent = result?.score ?? 0;
+if (result && Number.isInteger(result.best)) {
+  bestEl.textContent = result.best;
+  bestLine.hidden = false;
+}
 if (result && !result.saved) {
   noteEl.textContent = 'Resultatet kunde inte sparas på topplistan.';
 }
