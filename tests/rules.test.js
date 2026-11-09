@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  cellsOf, canExit, createState, clickMatch, nextLevelState, isLevelCleared, isGameOver,
+  cellsOf, canExit, createState, clickMatch, nextLevelState, candleProgress, isLevelCleared, isGameOver,
 } from '../client/js/game/rules.js';
 
 const SIZE = 5;
@@ -51,75 +51,76 @@ test('clickMatch: collision costs a heart, no minus points', () => {
 
 test('clickMatch: exit gives +1 and removes the match', () => {
   const a = { id: 1, x: 1, y: 2, length: 2, dir: 'right' };
-  const b = { id: 2, x: 0, y: 4, length: 1, dir: 'left' };
+  const b = { id: 2, x: 4, y: 4, length: 1, dir: 'right' };
   const { state, result } = clickMatch(createState([a, b], SIZE), 1);
   assert.equal(result, 'exit');
-  assert.equal(state.score, 1);
-  assert.equal(state.candlesLit, 1);
-  assert.deepEqual(state.litCandles, [1]);
+  assert.equal(state.score, 1); // another match still points right: no candle yet
   assert.equal(state.matches.length, 1);
+  assert.deepEqual(state.litCandles, []);
+  assert.equal(state.candlesLit, 0);
 });
 
-test('clickMatch: +5 once when all 4 candles have burned, +3 for cleared level', () => {
+test('clickMatch: the last match of a direction lights its candle (+1 and +2)', () => {
+  const a = { id: 1, x: 1, y: 2, length: 2, dir: 'right' };
+  const b = { id: 2, x: 4, y: 4, length: 1, dir: 'right' };
+  const c = { id: 3, x: 0, y: 0, length: 1, dir: 'up' };
+  let state = createState([a, b, c], SIZE);
+  state = clickMatch(state, 1).state;
+  state = clickMatch(state, 2).state; // last one pointing right -> candle 2
+  assert.deepEqual(state.litCandles, [2]);
+  assert.equal(state.candlesLit, 1);
+  assert.equal(state.score, 1 + 1 + 2);
+});
+
+test('clickMatch: candle numbers are 1 up, 2 right, 3 down, 4 left', () => {
+  const heads = { up: [2, 0], right: [4, 2], down: [2, 4], left: [0, 2] };
+  ['up', 'right', 'down', 'left'].forEach((dir, index) => {
+    const [x, y] = heads[dir];
+    const match = { id: 1, x, y, length: 1, dir };
+    const { state } = clickMatch(createState([match], SIZE), 1);
+    assert.deepEqual(state.litCandles, [index + 1]);
+  });
+});
+
+test('clickMatch: all 4 candles and a cleared level', () => {
   const matches = [
     { id: 1, x: 0, y: 0, length: 1, dir: 'up' },
     { id: 2, x: 4, y: 1, length: 1, dir: 'right' },
     { id: 3, x: 2, y: 4, length: 1, dir: 'down' },
     { id: 4, x: 0, y: 3, length: 1, dir: 'left' },
-  ];
-  let state = createState(matches, SIZE);
-  for (const id of [1, 2, 3]) state = clickMatch(state, id).state;
-  assert.equal(state.score, 3);
-  state = clickMatch(state, 4).state;
-  // 4 candles (+4) + all-candles bonus (+5) + level cleared (+3)
-  assert.equal(state.score, 12);
-  assert.equal(isLevelCleared(state), true);
-  assert.equal(state.levelsCleared, 1);
-});
-
-test('clickMatch: all-candles bonus is only given once', () => {
-  const matches = [
-    { id: 1, x: 0, y: 0, length: 1, dir: 'up' },
-    { id: 2, x: 4, y: 1, length: 1, dir: 'right' },
-    { id: 3, x: 2, y: 4, length: 1, dir: 'down' },
-    { id: 4, x: 0, y: 3, length: 1, dir: 'left' },
-    { id: 5, x: 3, y: 0, length: 1, dir: 'up' },
   ];
   let state = createState(matches, SIZE);
   for (const id of [1, 2, 3, 4]) state = clickMatch(state, id).state;
-  const before = state.score; // 4 + 5 = 9
-  state = clickMatch(state, 5).state;
-  assert.equal(state.score, before + 1 + 3); // +1 candle, +3 level, no second bonus
+  // 4 x (1 match + 2 candle) + 3 level cleared
+  assert.equal(state.score, 15);
+  assert.deepEqual(state.litCandles, [1, 2, 3, 4]);
+  assert.equal(state.candlesLit, 4);
+  assert.equal(state.levelsCleared, 1);
+  assert.equal(isLevelCleared(state), true);
 });
 
-test('clickMatch: candles are lit in order, no matter which way the match points', () => {
-  const matches = [
-    { id: 1, x: 0, y: 0, length: 1, dir: 'left' },
-    { id: 2, x: 4, y: 4, length: 1, dir: 'down' },
-    { id: 3, x: 2, y: 0, length: 1, dir: 'up' },
-  ];
-  let state = createState(matches, SIZE);
-  state = clickMatch(state, 1).state;
-  assert.deepEqual(state.litCandles, [1]);
-  state = clickMatch(state, 2).state;
-  assert.deepEqual(state.litCandles, [1, 2]);
-  state = clickMatch(state, 3).state;
-  assert.deepEqual(state.litCandles, [1, 2, 3]);
-});
-
-test('clickMatch: a collision does not light a candle', () => {
+test('clickMatch: a collision lights nothing and gives no points', () => {
   const a = { id: 1, x: 1, y: 2, length: 2, dir: 'right' };
   const blocker = { id: 2, x: 3, y: 2, length: 1, dir: 'up' };
   const { state } = clickMatch(createState([a, blocker], SIZE), 1);
   assert.deepEqual(state.litCandles, []);
+  assert.equal(state.score, 0);
 });
 
-test('clickMatch: after 4 candles there is no 5th, only +1 point', () => {
-  const matches = [1, 2, 3, 4, 5].map((id) => ({ id, x: 0, y: id - 1, length: 1, dir: 'left' }));
+test('candleProgress: done / total per candle', () => {
+  const matches = [
+    { id: 1, x: 0, y: 0, length: 1, dir: 'up' },
+    { id: 2, x: 4, y: 0, length: 1, dir: 'up' },
+    { id: 3, x: 4, y: 1, length: 1, dir: 'right' },
+  ];
   let state = createState(matches, SIZE);
-  for (const id of [1, 2, 3, 4, 5]) state = clickMatch(state, id).state;
-  assert.deepEqual(state.litCandles, [1, 2, 3, 4]);
-  assert.equal(state.candlesLit, 5);
+  state = clickMatch(state, 1).state;
+  const progress = candleProgress(state);
+  assert.deepEqual(progress[1], { done: 1, total: 2, lit: false });
+  assert.deepEqual(progress[2], { done: 0, total: 1, lit: false });
+  assert.deepEqual(progress[3], { done: 0, total: 0, lit: false }); // no match points down
+  state = clickMatch(state, 2).state;
+  assert.deepEqual(candleProgress(state)[1], { done: 2, total: 2, lit: true });
 });
 
 test('clickMatch: unknown id or no hearts is ignored', () => {
@@ -136,17 +137,25 @@ test('isGameOver: timer 0 or hearts 0', () => {
   assert.equal(isGameOver({ ...state, hearts: 0 }, 5000), true);
 });
 
-test('nextLevelState: new board, but score, hearts and candles are kept', () => {
+test('nextLevelState: new board and candles from zero, score and hearts are kept', () => {
   const a = { id: 1, x: 0, y: 0, length: 1, dir: 'up' };
   let state = createState([a], SIZE);
   state = clickMatch(state, 1).state;
   state = { ...state, hearts: 2 };
-  const level = { size: 6, matches: [{ id: 1, x: 5, y: 5, length: 1, dir: 'down' }] };
+  const level = {
+    size: 6,
+    matches: [
+      { id: 1, x: 5, y: 5, length: 1, dir: 'down' },
+      { id: 2, x: 0, y: 0, length: 1, dir: 'down' },
+    ],
+  };
   const next = nextLevelState(state, level);
   assert.equal(next.size, 6);
-  assert.equal(next.matches.length, 1);
+  assert.equal(next.matches.length, 2);
   assert.equal(next.score, state.score);
   assert.equal(next.hearts, 2);
-  assert.deepEqual(next.litCandles, [1]);
+  assert.deepEqual(next.litCandles, []);
+  assert.deepEqual(next.dirTotals, { up: 0, right: 0, down: 2, left: 0 });
+  assert.equal(next.candlesLit, state.candlesLit);
   assert.equal(next.levelsCleared, state.levelsCleared);
 });

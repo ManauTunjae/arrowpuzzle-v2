@@ -1,5 +1,5 @@
 // Draws the board as SVG. No game rules here, only drawing + click events.
-import { cellsOf, DIRECTIONS } from './rules.js';
+import { cellsOf, DIRECTIONS, candleProgress } from './rules.js';
 
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const CELL = 60;     // size of one cell in SVG units
@@ -17,17 +17,41 @@ function el(name, attrs = {}, parent) {
   return node;
 }
 
+// Remembers the last flame size of each candle, so the flame can grow smoothly.
+const lastFlameScale = new Map();
+
+// Size of the flame: 0 = none, small while matches are leaving, 1 = candle is lit.
+function flameScale({ done, total, lit }) {
+  if (lit) return 1;
+  if (total === 0 || done === 0) return 0;
+  return 0.25 + 0.5 * (done / total);
+}
+
 // One candle, drawn "pointing up". The group is rotated to its side.
-function drawCandle(parent, number, x, y, angle, lit) {
+function drawCandle(parent, number, x, y, angle, progress) {
+  const scale = flameScale(progress);
   const g = el('g', {
-    class: lit ? 'candle candle--lit' : 'candle',
+    class: progress.lit ? 'candle candle--lit' : 'candle',
     transform: `translate(${x} ${y}) rotate(${angle})`,
     'data-candle': number,
+    'data-progress': `${progress.done}/${progress.total}`,
   }, parent);
   el('rect', { class: 'candle__body', x: -9, y: -14, width: 18, height: 34, rx: 3 }, g);
   el('line', { class: 'candle__wick', x1: 0, y1: -14, x2: 0, y2: -20 }, g);
-  el('ellipse', { class: 'candle__flame', cx: 0, cy: -29, rx: 7, ry: 11 }, g);
+  const flame = el('ellipse', { class: 'candle__flame', cx: 0, cy: -29, rx: 7, ry: 11 }, g);
   el('ellipse', { class: 'candle__glow', cx: 0, cy: -29, rx: 18, ry: 22 }, g);
+
+  // The flame grows from where it was last time to where it is now.
+  const before = lastFlameScale.get(number) ?? 0;
+  flame.style.transform = `scale(${scale})`;
+  flame.style.opacity = scale > 0 ? 1 : 0;
+  if (scale > before && !reduceMotion()) {
+    flame.animate(
+      [{ transform: `scale(${before})`, opacity: before > 0 ? 1 : 0 }, { transform: `scale(${scale})`, opacity: 1 }],
+      { duration: 450, easing: 'ease-out' },
+    );
+  }
+  lastFlameScale.set(number, scale);
 }
 
 function drawMatch(parent, match, onClick) {
@@ -103,11 +127,11 @@ export function renderBoard(svg, state, onMatchClick) {
   // 4 candles: up, right, down, left.
   const mid = total / 2;
   const edge = MARGIN / 2 + 6;
-  const lit = (n) => state.litCandles.includes(n);
-  drawCandle(svg, 1, mid, edge, 0, lit(1));
-  drawCandle(svg, 2, total - edge, mid, 90, lit(2));
-  drawCandle(svg, 3, mid, total - edge, 180, lit(3));
-  drawCandle(svg, 4, edge, mid, 270, lit(4));
+  const progress = candleProgress(state);
+  drawCandle(svg, 1, mid, edge, 0, progress[1]);
+  drawCandle(svg, 2, total - edge, mid, 90, progress[2]);
+  drawCandle(svg, 3, mid, total - edge, 180, progress[3]);
+  drawCandle(svg, 4, edge, mid, 270, progress[4]);
 
   for (const match of state.matches) drawMatch(svg, match, onMatchClick);
 }
