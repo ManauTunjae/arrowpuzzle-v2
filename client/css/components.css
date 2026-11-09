@@ -1,19 +1,24 @@
 /* Shared components. Colors only through var(--color-...). */
 .button {
+  --btn: var(--color-accent);
   display: block;
   margin: 16px auto 0;
-  padding: 12px 28px;
+  padding: 14px 28px;
   font: inherit;
   font-weight: 600;
   color: var(--color-card);
-  background: var(--color-accent);
+  background: var(--btn);
   border: 2px solid transparent;
   border-radius: 999px;
   cursor: pointer;
+  box-shadow: 0 6px 16px color-mix(in srgb, var(--btn) 35%, transparent);
+  transition: transform 0.15s ease, box-shadow 0.2s ease, filter 0.2s ease, background-color 0.2s ease;
 }
 
-.button:hover { filter: brightness(1.08); }
+.button:hover { transform: translateY(-2px); box-shadow: 0 10px 22px color-mix(in srgb, var(--btn) 40%, transparent); }
+.button:active { transform: translateY(1px) scale(0.98); box-shadow: 0 2px 6px color-mix(in srgb, var(--btn) 30%, transparent); }
 .button:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 3px; }
+.button:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
 .button[hidden] { display: none; }
 
 /* Forms */
@@ -21,6 +26,7 @@
 .field label { display: block; margin-bottom: 6px; font-weight: 600; }
 .field input {
   width: 100%;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
   padding: 12px;
   font: inherit;
   color: var(--color-text);
@@ -32,7 +38,7 @@
 .field__hint { margin: 6px 0 0; font-size: 0.875rem; }
 .form-error { min-height: 1.5em; margin: 12px 0 0; color: var(--color-accent); font-weight: 600; }
 
-.button--primary { background: var(--color-primary); }
+.button--primary { --btn: var(--color-primary); }
 .card .button { width: 100%; }
 
 /* Link that looks like a button */
@@ -50,10 +56,13 @@ a.button { text-align: center; text-decoration: none; }
   padding: 48px 24px;
   text-align: center;
   color: var(--color-card);
-  background: var(--color-primary);
-  border-radius: 16px;
+  background:
+    radial-gradient(420px 220px at 50% 0%, color-mix(in srgb, var(--color-glow) 28%, transparent), transparent),
+    linear-gradient(160deg, color-mix(in srgb, var(--color-primary) 88%, white), var(--color-primary));
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
 }
-.hero h1 { margin: 0; color: var(--color-card); font-size: 2.25rem; }
+.hero h1 { margin: 0; color: var(--color-card); font-size: clamp(2rem, 8vw, 2.75rem); text-shadow: 0 2px 18px color-mix(in srgb, var(--color-glow) 45%, transparent); }
 .hero__content { position: relative; }
 .hero__org { margin: 0 0 8px; color: var(--color-glow); font-weight: 600; letter-spacing: 0.04em; }
 
@@ -85,6 +94,8 @@ a.button { text-align: center; text-decoration: none; }
 .leaderboard { width: 100%; border-collapse: collapse; }
 .leaderboard th, .leaderboard td { padding: 8px 6px; text-align: left; border-bottom: 1px solid var(--color-line); }
 .leaderboard th:last-child, .leaderboard td:last-child { text-align: right; }
+.leaderboard tbody tr { transition: background-color 0.2s ease; }
+.leaderboard tbody tr:hover { background: color-mix(in srgb, var(--color-line) 45%, transparent); }
 .leaderboard__me { font-weight: 600; background: color-mix(in srgb, var(--color-glow) 20%, transparent); }
 
 .visually-hidden {
@@ -101,7 +112,10 @@ a.button { text-align: center; text-decoration: none; }
   color: var(--color-primary);
   background: transparent;
   border-color: var(--color-primary);
+  box-shadow: none;
 }
+.button--secondary:hover { background: color-mix(in srgb, var(--color-primary) 8%, transparent); }
+.button--secondary:hover, .button--secondary:active { box-shadow: none; }
 
 /* Gift page */
 .simulation-note {
@@ -118,6 +132,7 @@ a.button { text-align: center; text-decoration: none; }
 .amount input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
 .amount span {
   display: block;
+  transition: transform 0.15s ease, border-color 0.2s ease, background-color 0.2s ease;
   padding: 12px 18px;
   font-weight: 600;
   background: var(--color-card);
@@ -125,6 +140,7 @@ a.button { text-align: center; text-decoration: none; }
   border-radius: 999px;
 }
 /* A check mark, so color is not the only sign of the choice. */
+.amount:hover span { transform: translateY(-2px); border-color: var(--color-primary); }
 .amount input:checked + span { color: var(--color-card); background: var(--color-primary); border-color: var(--color-primary); }
 .amount input:checked + span::before { content: '✓ '; }
 .amount input:focus-visible + span { outline: 3px solid var(--color-glow); outline-offset: 2px; }

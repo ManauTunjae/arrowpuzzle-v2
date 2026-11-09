@@ -11,6 +11,10 @@
   /* Match wood. Not part of the campaign theme. */
   --color-wood: #D9B98C;
   --color-wood-dark: #A9825A;
+
+  /* Soft shadows, made from the theme colors so every campaign gets its own. */
+  --shadow-card: 0 1px 2px color-mix(in srgb, var(--color-text) 8%, transparent),
+                 0 12px 32px color-mix(in srgb, var(--color-primary) 12%, transparent);
 }
 
 * { box-sizing: border-box; }
@@ -18,9 +22,16 @@
 body {
   margin: 0;
   padding: 16px;
+  min-height: 100dvh;
   font-family: 'Inter', system-ui, sans-serif;
-  background: var(--color-bg);
+  line-height: 1.6;
   color: var(--color-text);
+  /* A warm glow at the top, like candlelight. */
+  background:
+    radial-gradient(900px 420px at 50% -80px, color-mix(in srgb, var(--color-glow) 22%, transparent), transparent),
+    var(--color-bg);
+  background-attachment: fixed;
+  -webkit-font-smoothing: antialiased;
 }
 
 main {
@@ -31,12 +42,46 @@ main {
 .card {
   background: var(--color-card);
   border: 1px solid var(--color-line);
-  border-radius: 12px;
-  padding: 16px;
+  border-radius: 20px;
+  padding: 24px 20px;
+  box-shadow: var(--shadow-card);
 }
 
-h1 { color: var(--color-primary); }
+h1 {
+  margin: 0 0 12px;
+  color: var(--color-primary);
+  font-size: clamp(1.75rem, 6vw, 2.25rem);
+  font-weight: 600;
+  line-height: 1.15;
+  letter-spacing: -0.02em;
+}
+
+p { margin: 0 0 12px; }
+
+a { color: var(--color-primary); }
 
 @media (min-width: 768px) {
   body { padding: 32px; }
+  .card { padding: 32px 28px; }
+}
+
+/* Soft movement. Only for people who have not asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  /* Smooth change between pages (Chrome and Safari; other browsers just change page). */
+  @view-transition { navigation: auto; }
+
+  /* The card and its content rise in, one by one. */
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: none; }
+  }
+  /* 'backwards' (not 'both'): when the animation is done it lets go, so buttons can still lift on hover. */
+  .card, .hero { animation: rise 0.5s ease-out backwards; }
+  .card > * { animation: rise 0.5s ease-out backwards; }
+  .card > :nth-child(1) { animation-delay: 0.05s; }
+  .card > :nth-child(2) { animation-delay: 0.1s; }
+  .card > :nth-child(3) { animation-delay: 0.15s; }
+  .card > :nth-child(4) { animation-delay: 0.2s; }
+  .card > :nth-child(5) { animation-delay: 0.25s; }
+  .card > :nth-child(n + 6) { animation-delay: 0.3s; }
 }
