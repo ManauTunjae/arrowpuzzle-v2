@@ -27,8 +27,10 @@ async function request(path, options = {}) {
 export const getCampaign = (slug) =>
   request(`/api/campaigns/${encodeURIComponent(slug)}`);
 
-export const createPlayer = (campaignSlug, nickname) =>
-  request('/api/players', { method: 'POST', body: { campaignSlug, nickname } });
+export const createPlayer = (campaignSlug, nickname, inviteCode) =>
+  request('/api/players', { method: 'POST', body: { campaignSlug, nickname, inviteCode } });
+
+export const createInvite = () => request('/api/invites', { method: 'POST' });
 
 export const getMe = () => request('/api/players/me');
 

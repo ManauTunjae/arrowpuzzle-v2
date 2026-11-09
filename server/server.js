@@ -5,6 +5,7 @@ import campaignsRouter from './routes/campaigns.js';
 import playersRouter from './routes/players.js';
 import sessionsRouter from './routes/sessions.js';
 import donationsRouter from './routes/donations.js';
+import { invitesApi, inviteLink } from './routes/invites.js';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -20,6 +21,8 @@ app.use('/api/campaigns', campaignsRouter);
 app.use('/api/players', playersRouter);
 app.use('/api/sessions', sessionsRouter);
 app.use('/api/donations', donationsRouter);
+app.use('/api/invites', invitesApi);
+app.use('/i', inviteLink);
 
 // Express also serves the files in client/.
 app.use(express.static(path.join(rootDir, 'client')));

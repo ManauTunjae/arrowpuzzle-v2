@@ -1,6 +1,6 @@
 import { loadCampaign, withCampaign } from '../theme.js';
 import { createPlayer, getMe } from '../api.js';
-import { getToken, getNickname, savePlayer } from '../player.js';
+import { getToken, getNickname, savePlayer, getInviteRef, clearInviteRef } from '../player.js';
 
 const form = document.querySelector('#name-form');
 const input = document.querySelector('#nickname');
@@ -42,8 +42,9 @@ form.addEventListener('submit', async (event) => {
 
   submit.disabled = true; // avoid double submit
   try {
-    const { token, player } = await createPlayer(campaign.slug, nickname);
+    const { token, player } = await createPlayer(campaign.slug, nickname, getInviteRef());
     savePlayer(token, player.nickname);
+    clearInviteRef();
     location.href = withCampaign(NEXT_PAGE);
   } catch (error) {
     errorEl.textContent = error.message;
