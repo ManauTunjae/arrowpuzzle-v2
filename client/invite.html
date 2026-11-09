@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="sv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Utmana en vän – Tänd ett ljus</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/components.css">
+</head>
+<body>
+  <main>
+    <div class="card">
+      <h1>Utmana en vän</h1>
+      <p>Skicka en länk till någon du vill utmana. Vi läser aldrig dina kontakter och sparar aldrig vännens nummer.</p>
+
+      <div class="field">
+        <label for="message">Ditt meddelande</label>
+        <textarea id="message" rows="4" readonly></textarea>
+      </div>
+
+      <p id="status" class="form-error" role="status"></p>
+
+      <button id="share" class="button button--primary" type="button" hidden>Dela</button>
+      <a id="sms" class="button button--primary" href="#" hidden>Skicka som SMS</a>
+      <button id="copy" class="button button--secondary" type="button">Kopiera meddelandet</button>
+      <a id="next" class="button button--secondary" href="sms.html">Fortsätt</a>
+    </div>
+  </main>
+  <script type="module" src="js/pages/invite.js"></script>
+</body>
+</html>

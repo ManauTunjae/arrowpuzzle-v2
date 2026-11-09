@@ -130,3 +130,17 @@ a.button { text-align: center; text-decoration: none; }
 .amount input:focus-visible + span { outline: 3px solid var(--color-glow); outline-offset: 2px; }
 #qr-box { text-align: center; }
 #qr { background: #fff; border-radius: 8px; padding: 4px; }
+
+/* Text area (invite message) */
+.field textarea {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-card);
+  border: 2px solid var(--color-line);
+  border-radius: 10px;
+  resize: none;
+}
+.field textarea:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 2px; border-color: var(--color-primary); }
+.card .button + .button { margin-top: 10px; }

@@ -37,6 +37,7 @@ const payError = document.querySelector('#pay-error');
 const simulateBtn = document.querySelector('#simulate');
 const doneText = document.querySelector('#done-text');
 document.querySelector('#back').href = withCampaign('result.html');
+document.querySelector('#next').href = withCampaign('invite.html');
 
 // Phone: "Open Swish" button. Computer: QR code.
 const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
