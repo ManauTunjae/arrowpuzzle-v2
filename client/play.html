@@ -14,15 +14,18 @@
 <body class="game">
   <main>
     <div class="hud">
-      <span>Tid: <span id="time">30</span></span>
-      <span>Nivå: <span id="level">1/3</span></span>
-      <span>Poäng: <span id="score">0</span></span>
-      <span class="hud__hearts">Hjärtan: <span id="hearts">3</span></span>
+      <div class="hud__item"><span class="hud__label">Tid</span><span class="hud__value" id="time">30</span></div>
+      <div class="hud__item"><span class="hud__label">Nivå</span><span class="hud__value" id="level">1/3</span></div>
+      <div class="hud__item"><span class="hud__label">Poäng</span><span class="hud__value" id="score">0</span></div>
+      <div class="hud__item"><span class="hud__label">Hjärtan</span><span class="hud__value" id="hearts">3</span></div>
     </div>
     <div class="board-wrap" id="board-wrap">
       <svg id="board" class="game-board" role="group" aria-label="Spelbräde"></svg>
+      <div class="board-overlay" id="overlay">
+        <p id="end-text" class="board-overlay__text"></p>
+        <button id="start" class="button" type="button">Starta</button>
+      </div>
     </div>
-    <button id="start" class="button" type="button">Starta</button>
     <p id="message" class="game-message" role="status"></p>
   </main>
   <script type="module" src="js/pages/play.js"></script>

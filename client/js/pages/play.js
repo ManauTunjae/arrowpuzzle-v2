@@ -11,6 +11,8 @@ const levelEl = document.querySelector('#level');
 const messageEl = document.querySelector('#message');
 const wrapEl = document.querySelector('#board-wrap');
 const startBtn = document.querySelector('#start');
+const overlay = document.querySelector('#overlay');
+const endText = document.querySelector('#end-text');
 
 const END_TEXT = {
   time: 'Tiden är slut!',
@@ -52,15 +54,16 @@ const game = createGame({
   },
   onPoints: showPoints,
   onEnd({ reason, state }) {
-    messageEl.textContent = `${END_TEXT[reason]} Du fick ${state.score} poäng.`;
+    messageEl.textContent = '';
+    endText.textContent = `${END_TEXT[reason]} Du fick ${state.score} poäng.`;
     startBtn.textContent = 'Spela igen';
-    startBtn.hidden = false;
+    overlay.hidden = false;
     startBtn.focus();
   },
 });
 
 startBtn.addEventListener('click', () => {
-  startBtn.hidden = true;
+  overlay.hidden = true;
   game.start();
 });
 
