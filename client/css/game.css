@@ -1,0 +1,53 @@
+/* Game page. Colors only through var(--color-...). */
+body.game {
+  background: var(--color-game-bg);
+  color: var(--color-card);
+  min-height: 100vh;
+}
+
+.hud {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 560px;
+  margin: 0 auto 8px;
+  font-weight: 600;
+}
+
+/* Hearts: text label too, so color is not the only difference. */
+.hud__hearts { letter-spacing: 2px; }
+
+.game-board {
+  display: block;
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  height: auto;
+  touch-action: manipulation;
+}
+
+.board { fill: rgba(255, 253, 248, 0.07); stroke: var(--color-line); stroke-opacity: 0.4; }
+.board__dot { fill: var(--color-line); opacity: 0.35; }
+
+/* Matches */
+.match { cursor: pointer; outline: none; }
+.match__body { fill: var(--color-card); stroke: var(--color-line); stroke-width: 2; }
+.match__head { fill: var(--color-accent); stroke: var(--color-card); stroke-width: 2; }
+.match__hit { fill: transparent; }
+.match:hover .match__body,
+.match:focus-visible .match__body { stroke: var(--color-glow); stroke-width: 4; }
+
+/* Candles */
+.candle__body { fill: var(--color-card); opacity: 0.45; }
+.candle__wick { stroke: var(--color-line); stroke-width: 2; }
+.candle__flame { fill: var(--color-glow); opacity: 0; }
+.candle__glow { fill: var(--color-glow); opacity: 0; }
+.candle--lit .candle__body { opacity: 1; }
+.candle--lit .candle__flame { opacity: 1; }
+.candle--lit .candle__glow { opacity: 0.25; }
+
+.game-message {
+  text-align: center;
+  min-height: 1.5em;
+  margin-top: 12px;
+}
