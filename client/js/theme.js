@@ -32,3 +32,8 @@ export async function loadCampaign() {
   applyTheme(campaign.theme);
   return campaign;
 }
+
+// Keeps the campaign in links between pages: withCampaign('name.html') -> 'name.html?c=norrskenet'
+export function withCampaign(path) {
+  return `${path}?c=${encodeURIComponent(getCampaignSlug())}`;
+}

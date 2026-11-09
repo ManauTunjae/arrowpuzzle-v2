@@ -15,3 +15,22 @@
 .button:hover { filter: brightness(1.08); }
 .button:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 3px; }
 .button[hidden] { display: none; }
+
+/* Forms */
+.field { margin-top: 16px; }
+.field label { display: block; margin-bottom: 6px; font-weight: 600; }
+.field input {
+  width: 100%;
+  padding: 12px;
+  font: inherit;
+  color: var(--color-text);
+  background: var(--color-card);
+  border: 2px solid var(--color-line);
+  border-radius: 10px;
+}
+.field input:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 2px; border-color: var(--color-primary); }
+.field__hint { margin: 6px 0 0; font-size: 0.875rem; }
+.form-error { min-height: 1.5em; margin: 12px 0 0; color: var(--color-accent); font-weight: 600; }
+
+.button--primary { background: var(--color-primary); }
+.card .button { width: 100%; }
