@@ -34,3 +34,10 @@
 
 .button--primary { background: var(--color-primary); }
 .card .button { width: 100%; }
+
+/* Link that looks like a button */
+a.button { text-align: center; text-decoration: none; }
+
+/* Instruction list */
+.steps { padding-left: 20px; line-height: 1.5; }
+.steps li { margin-bottom: 10px; }
