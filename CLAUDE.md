@@ -125,8 +125,8 @@ Alla svar är JSON. Fel: `{ "error": "..." }` med rätt statuskod (400, 401, 404
 
 - En tändsticka: `{ id, x, y, length, dir: 'up' | 'down' | 'left' | 'right' }`. Den är **rak**. Knoppen sitter i `dir`-änden.
 - `canExit(match, matches, size)`: gå från knoppen ruta för ruta åt `dir` till kanten. Annan sticka i vägen → `false`.
-- Ljusen tänds **i ordning**: första rätta stickan tänder ljus 1 (upp), andra ljus 2 (höger), tredje ljus 3 (ner), fjärde ljus 4 (vänster). Vilket håll stickan pekar spelar ingen roll. Efter 4 ljus ger varje sticka bara +1 poäng.
-- Poäng: +1 per tänt ljus, +5 första gången alla 4 ljus har brunnit, +3 per klar nivå. Krock = −1 hjärta, ingen minuspoäng.
+- Ett ljus tänds när **den sista stickan som pekar åt ljusets håll** har åkt ut (`up` → ljus 1, `right` → 2, `down` → 3, `left` → 4). Ljusen börjar om varje nivå. Lågan växer för varje sticka som åker ut åt det hållet.
+- Poäng: +1 per sticka som åker ut, +2 extra när ett ljus tänds, +3 extra per klar nivå. Krock = −1 hjärta, ingen minuspoäng.
 - Spelet slutar när timern når 0 eller hjärtan är 0.
 - Nivåer görs **för hand** i `levels.js` (5×5, 6×6, 7×7). Slumpa inte nivåer.
 - `rules.js` ska vara **rena funktioner** utan DOM. Då kan `tests/rules.test.js` testa dem med `node --test`.

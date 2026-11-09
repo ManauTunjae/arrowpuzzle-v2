@@ -40,10 +40,15 @@ body.game {
 /* Candles */
 .candle__body { fill: var(--color-card); opacity: 0.45; }
 .candle__wick { stroke: var(--color-line); stroke-width: 2; }
-.candle__flame { fill: var(--color-glow); opacity: 0; }
+.candle__flame {
+  fill: var(--color-glow);
+  opacity: 0;
+  /* The flame grows from its base (see scale in board.js). */
+  transform-box: fill-box;
+  transform-origin: 50% 100%;
+}
 .candle__glow { fill: var(--color-glow); opacity: 0; }
 .candle--lit .candle__body { opacity: 1; }
-.candle--lit .candle__flame { opacity: 1; }
 .candle--lit .candle__glow { opacity: 0.25; }
 
 /* Floating points in the middle of the board */

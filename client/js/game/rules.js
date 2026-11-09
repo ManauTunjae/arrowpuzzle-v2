@@ -11,14 +11,15 @@ export const DIRECTIONS = {
   right: { dx: 1, dy: 0 },
 };
 
-// Candles are lit in order: the 1st correct match lights candle 1, the 2nd lights
-// candle 2, and so on. Candle positions: 1 = up, 2 = right, 3 = down, 4 = left.
+// A candle is lit when the LAST match that points its way has left the board.
+// Candle positions: 1 = up, 2 = right, 3 = down, 4 = left.
+export const CANDLE_BY_DIR = { up: 1, right: 2, down: 3, left: 4 };
 export const CANDLE_COUNT = 4;
 
 export const POINTS = {
-  perCandle: 1,
-  allCandlesBonus: 5,
-  perLevelCleared: 3,
+  perMatch: 1,       // every match that leaves the board
+  perCandleLit: 2,   // extra, when a candle is lit
+  perLevelCleared: 3, // extra, when the board is empty
 };
 
 export const MAX_HEARTS = 3;
@@ -55,17 +56,35 @@ export function canExit(match, matches, size) {
 
 // --- Game state (never changed in place, we return a new object) ---
 
+// How many matches point up / right / down / left.
+export function countByDir(matches) {
+  const counts = { up: 0, right: 0, down: 0, left: 0 };
+  for (const match of matches) counts[match.dir] += 1;
+  return counts;
+}
+
 export function createState(matches, size) {
   return {
     size,
-    matches,            // matches still on the board
-    litCandles: [],     // candles that burn: [1], [1, 2], ... up to [1, 2, 3, 4]
-    candlesLit: 0,      // +1 every time a match leaves
+    matches,                        // matches still on the board
+    dirTotals: countByDir(matches), // matches per direction at the start of the level
+    litCandles: [],                 // candles that burn, e.g. [1, 3]. Reset every level.
+    candlesLit: 0,                  // candles lit in the whole game
     score: 0,
     hearts: MAX_HEARTS,
-    allCandlesBonusGiven: false,
     levelsCleared: 0,
   };
+}
+
+// Progress for each candle (1-4): how many matches are gone, and is it lit.
+export function candleProgress(state) {
+  const left = countByDir(state.matches);
+  const result = {};
+  for (const [dir, number] of Object.entries(CANDLE_BY_DIR)) {
+    const total = state.dirTotals[dir];
+    result[number] = { done: total - left[dir], total, lit: state.litCandles.includes(number) };
+  }
+  return result;
 }
 
 // Player clicks a match. Returns { state, result }.
@@ -79,20 +98,18 @@ export function clickMatch(state, matchId) {
     return { state: { ...state, hearts: state.hearts - 1 }, result: 'collision' };
   }
 
-  // Next candle in order. After all 4 are lit, more matches only give +1 point.
-  const litCandles = state.litCandles.length < CANDLE_COUNT
-    ? [...state.litCandles, state.litCandles.length + 1]
-    : state.litCandles;
-
-  let score = state.score + POINTS.perCandle;
-
-  let allCandlesBonusGiven = state.allCandlesBonusGiven;
-  if (!allCandlesBonusGiven && litCandles.length === CANDLE_COUNT) {
-    score += POINTS.allCandlesBonus;
-    allCandlesBonusGiven = true;
-  }
-
   const matches = state.matches.filter((m) => m.id !== matchId);
+  let score = state.score + POINTS.perMatch;
+
+  // Was this the last match pointing its way? Then its candle is lit.
+  let litCandles = state.litCandles;
+  let candlesLit = state.candlesLit;
+  const lastOfDirection = !matches.some((m) => m.dir === match.dir);
+  if (lastOfDirection) {
+    litCandles = [...litCandles, CANDLE_BY_DIR[match.dir]];
+    candlesLit += 1;
+    score += POINTS.perCandleLit;
+  }
 
   let levelsCleared = state.levelsCleared;
   if (matches.length === 0) {
@@ -101,22 +118,21 @@ export function clickMatch(state, matchId) {
   }
 
   return {
-    state: {
-      ...state,
-      matches,
-      litCandles,
-      candlesLit: state.candlesLit + 1,
-      score,
-      allCandlesBonusGiven,
-      levelsCleared,
-    },
+    state: { ...state, matches, litCandles, candlesLit, score, levelsCleared },
     result: 'exit',
   };
 }
 
-// New level, but score, hearts and candles are kept (one game = 3 levels).
+// New level: score, hearts and the candle count are kept (one game = 3 levels).
+// The candles start again from zero.
 export function nextLevelState(state, level) {
-  return { ...state, size: level.size, matches: level.matches };
+  return {
+    ...state,
+    size: level.size,
+    matches: level.matches,
+    dirTotals: countByDir(level.matches),
+    litCandles: [],
+  };
 }
 
 export function isLevelCleared(state) {
