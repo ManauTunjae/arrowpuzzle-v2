@@ -1,0 +1,19 @@
+# Dependencies
+node_modules/
+
+# Secrets (only .env.example is allowed)
+.env
+.env.*
+!.env.example
+
+# Database files (not on GitHub)
+server/data/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor
+.DS_Store
+.vscode/
+.idea/
