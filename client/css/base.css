@@ -1,0 +1,39 @@
+/* Default colors. theme.js overrides them from the campaign. */
+:root {
+  --color-bg: #FBF6EE;
+  --color-card: #FFFDF8;
+  --color-line: #EADFCF;
+  --color-primary: #2F4A3A;
+  --color-game-bg: #1F3329;
+  --color-accent: #B5443B;
+  --color-glow: #E8B04B;
+  --color-text: #3B2F2A;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  padding: 16px;
+  font-family: 'Inter', system-ui, sans-serif;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+main {
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+.card {
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 12px;
+  padding: 16px;
+}
+
+h1 { color: var(--color-primary); }
+
+@media (min-width: 768px) {
+  body { padding: 32px; }
+}
