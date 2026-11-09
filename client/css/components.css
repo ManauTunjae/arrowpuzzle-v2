@@ -95,3 +95,38 @@ a.button { text-align: center; text-decoration: none; }
   clip-path: inset(50%);
   white-space: nowrap;
 }
+
+/* Secondary button */
+.button--secondary {
+  color: var(--color-primary);
+  background: transparent;
+  border-color: var(--color-primary);
+}
+
+/* Gift page */
+.simulation-note {
+  margin: 0 0 12px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  background: color-mix(in srgb, var(--color-glow) 25%, transparent);
+  border-radius: 8px;
+}
+.amounts { margin: 16px 0 0; padding: 0; border: 0; }
+.amounts legend { padding: 0; font-weight: 600; }
+.amounts__options { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.amount { position: relative; }
+.amount input { position: absolute; opacity: 0; inset: 0; cursor: pointer; }
+.amount span {
+  display: block;
+  padding: 12px 18px;
+  font-weight: 600;
+  background: var(--color-card);
+  border: 2px solid var(--color-line);
+  border-radius: 999px;
+}
+/* A check mark, so color is not the only sign of the choice. */
+.amount input:checked + span { color: var(--color-card); background: var(--color-primary); border-color: var(--color-primary); }
+.amount input:checked + span::before { content: '✓ '; }
+.amount input:focus-visible + span { outline: 3px solid var(--color-glow); outline-offset: 2px; }
+#qr-box { text-align: center; }
+#qr { background: #fff; border-radius: 8px; padding: 4px; }
