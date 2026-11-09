@@ -4,7 +4,9 @@ import { cellsOf, DIRECTIONS, CANDLE_BY_DIR } from './rules.js';
 const SVG_NS = 'http://www.w3.org/2000/svg';
 const CELL = 60;     // size of one cell in SVG units
 const MARGIN = 70;   // space around the board for the candles
-const PAD = 9;       // space between a match and its cell edge
+const END_PAD = 8;    // space at the ends of a match (along its length)
+const SIDE_PAD = 21; // space at the sides (makes the match thin)
+const HEAD_R = 12;   // red head is a bit wider than the stick, like a real match
 
 const DIR_TEXT = { up: 'uppåt', down: 'nedåt', left: 'vänster', right: 'höger' };
 
@@ -16,16 +18,17 @@ function el(name, attrs = {}, parent) {
 }
 
 // One candle, drawn "pointing up". The group is rotated to its side.
+// When lit, the whole candle glows (see game.css).
 function drawCandle(parent, number, x, y, angle, lit) {
   const g = el('g', {
     class: lit ? 'candle candle--lit' : 'candle',
     transform: `translate(${x} ${y}) rotate(${angle})`,
     'data-candle': number,
   }, parent);
-  el('rect', { class: 'candle__body', x: -9, y: -14, width: 18, height: 34, rx: 3 }, g);
-  el('line', { class: 'candle__wick', x1: 0, y1: -14, x2: 0, y2: -20 }, g);
-  el('ellipse', { class: 'candle__flame', cx: 0, cy: -29, rx: 7, ry: 11 }, g);
-  el('ellipse', { class: 'candle__glow', cx: 0, cy: -29, rx: 18, ry: 22 }, g);
+  el('ellipse', { class: 'candle__aura', cx: 0, cy: 0, rx: 30, ry: 42 }, g);
+  el('rect', { class: 'candle__body', x: -10, y: -10, width: 20, height: 36, rx: 4 }, g);
+  el('line', { class: 'candle__wick', x1: 0, y1: -10, x2: 0, y2: -16 }, g);
+  el('path', { class: 'candle__flame', d: 'M0 -40 C9 -30 9 -22 0 -17 C-9 -22 -9 -30 0 -40 Z' }, g);
 }
 
 function drawMatch(parent, match, onClick) {
@@ -45,23 +48,28 @@ function drawMatch(parent, match, onClick) {
     'aria-label': `Tändsticka, pekar ${DIR_TEXT[match.dir]}`,
   }, parent);
 
-  // Body (rounded rectangle) + a bigger invisible area that is easy to tap.
+  // Thin stick: small padding at the sides, small padding at the ends.
+  const horizontal = match.dir === 'left' || match.dir === 'right';
+  const padX = horizontal ? END_PAD : SIDE_PAD;
+  const padY = horizontal ? SIDE_PAD : END_PAD;
   el('rect', {
     class: 'match__body',
-    x: left + PAD, y: top + PAD, width: width - 2 * PAD, height: height - 2 * PAD, rx: 10,
+    x: left + padX, y: top + padY, width: width - 2 * padX, height: height - 2 * padY, rx: 6,
   }, g);
 
-  // Red head at the end where dir points.
+  // Red head at the end where dir points (flush with the end of the stick).
   const { dx, dy } = DIRECTIONS[match.dir];
   const headX = MARGIN + match.x * CELL + CELL / 2;
   const headY = MARGIN + match.y * CELL + CELL / 2;
+  const offset = CELL / 2 - END_PAD - HEAD_R;
   el('circle', {
     class: 'match__head',
-    cx: headX + dx * (CELL / 2 - PAD - 14),
-    cy: headY + dy * (CELL / 2 - PAD - 14),
-    r: 14,
+    cx: headX + dx * offset,
+    cy: headY + dy * offset,
+    r: HEAD_R,
   }, g);
 
+  // Bigger invisible area that is easy to tap.
   el('rect', { class: 'match__hit', x: left, y: top, width, height }, g);
 
   g.addEventListener('click', () => onClick(match.id));

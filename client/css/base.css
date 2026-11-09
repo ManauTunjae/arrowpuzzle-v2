@@ -8,6 +8,9 @@
   --color-accent: #B5443B;
   --color-glow: #E8B04B;
   --color-text: #3B2F2A;
+  /* Match wood. Not part of the campaign theme. */
+  --color-wood: #D9B98C;
+  --color-wood-dark: #A9825A;
 }
 
 * { box-sizing: border-box; }
