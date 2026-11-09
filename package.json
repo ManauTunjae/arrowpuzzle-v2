@@ -7,7 +7,7 @@
     "dev": "node --env-file-if-exists=.env --watch server/server.js",
     "start": "node --env-file-if-exists=.env server/server.js",
     "db:reset": "node --env-file-if-exists=.env server/db/reset.js",
-    "test": "node --test tests/"
+    "test": "node --test tests/*.test.js"
   },
   "dependencies": {
     "better-sqlite3": "^13.0.3",
