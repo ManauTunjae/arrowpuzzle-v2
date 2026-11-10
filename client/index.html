@@ -6,23 +6,128 @@
   <title>Tänd ett ljus</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap">
   <link rel="stylesheet" href="css/base.css">
   <link rel="stylesheet" href="css/components.css">
+  <link rel="stylesheet" href="css/start.css">
 </head>
 <body>
-  <main>
-    <header class="hero">
-      <div class="snow" aria-hidden="true"></div>
-      <div class="hero__content">
-        <p class="hero__org" id="org"></p>
-        <h1 id="title">Tänd ett ljus</h1>
-      </div>
+  <main class="start-page">
+    <header class="topbar">
+      <p class="topbar__org">
+        <span class="logo" id="logo" aria-hidden="true"></span>
+        <span id="org"></span>
+      </p>
+      <nav class="topbar__nav" aria-label="Meny">
+        <a id="leaderboard-link" class="topbar__link" href="result.html">Topplista</a>
+        <button id="gift-top" class="button button--secondary button--small" type="button">Ge en gåva</button>
+      </nav>
     </header>
-    <div class="card">
-      <p id="intro">Laddar…</p>
-      <a id="start" class="button button--primary" href="name.html">Starta</a>
-    </div>
+
+    <section class="intro">
+      <!-- Today a drawn picture. Later this can be replaced by a Spline 3D scene. -->
+      <div class="scene">
+        <svg viewBox="0 0 400 340" role="img" aria-label="Fyra adventsljus på en hylla. Ljus 1 är tänt." preserveAspectRatio="xMidYMid meet">
+          <defs>
+            <linearGradient id="wax" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" style="stop-color: var(--color-card)"/>
+              <stop offset="1" style="stop-color: var(--color-line)"/>
+            </linearGradient>
+            <radialGradient id="glow">
+              <stop offset="0" style="stop-color: var(--color-glow)" stop-opacity="0.55"/>
+              <stop offset="1" style="stop-color: var(--color-glow)" stop-opacity="0"/>
+            </radialGradient>
+          </defs>
+          <rect width="400" height="340" style="fill: var(--color-game-bg)"/>
+
+          <g class="scene__stars" style="fill: var(--color-card)">
+            <circle cx="40" cy="48" r="2"/><circle cx="130" cy="30" r="1.5"/><circle cx="236" cy="64" r="2"/>
+            <circle cx="330" cy="40" r="1.5"/><circle cx="372" cy="110" r="2"/><circle cx="24" cy="130" r="1.5"/>
+            <circle cx="186" cy="100" r="1.5"/><circle cx="290" cy="22" r="1.5"/>
+          </g>
+
+          <!-- Candle 1 is lit -->
+          <circle class="scene__glow" cx="68" cy="142" r="78" fill="url(#glow)"/>
+          <rect x="38" y="160" width="60" height="120" rx="8" fill="url(#wax)"/>
+          <rect x="66" y="152" width="4" height="9" rx="2" style="fill: var(--color-text)"/>
+          <path class="scene__flame" d="M68 112 C80 128 84 140 68 154 C52 140 56 128 68 112Z" style="fill: var(--color-glow)"/>
+          <path class="scene__flame" d="M68 132 C73 139 74 144 68 150 C62 144 63 139 68 132Z" fill="#FFF3CC"/>
+          <text x="68" y="226" text-anchor="middle" class="scene__number">1</text>
+
+          <!-- Candles 2, 3 and 4 are not lit yet -->
+          <rect x="126" y="140" width="60" height="140" rx="8" fill="url(#wax)"/>
+          <rect x="154" y="132" width="4" height="9" rx="2" style="fill: var(--color-text)" opacity="0.6"/>
+          <text x="156" y="216" text-anchor="middle" class="scene__number">2</text>
+
+          <rect x="214" y="120" width="60" height="160" rx="8" fill="url(#wax)"/>
+          <rect x="242" y="112" width="4" height="9" rx="2" style="fill: var(--color-text)" opacity="0.6"/>
+          <text x="244" y="206" text-anchor="middle" class="scene__number">3</text>
+
+          <rect x="302" y="100" width="60" height="180" rx="8" fill="url(#wax)"/>
+          <rect x="330" y="92" width="4" height="9" rx="2" style="fill: var(--color-text)" opacity="0.6"/>
+          <text x="332" y="196" text-anchor="middle" class="scene__number">4</text>
+
+          <!-- Shelf -->
+          <rect x="22" y="278" width="356" height="18" rx="9" style="fill: var(--color-wood-dark)"/>
+        </svg>
+      </div>
+
+      <div class="intro__text">
+        <h1 id="title">Tänd ett ljus</h1>
+        <p id="intro" class="intro__lead">Laddar…</p>
+
+        <div class="goal" id="goal" hidden>
+          <div class="goal__labels">
+            <span>Insamlat: <strong id="raised"></strong> kr</span>
+            <span>Mål: <strong id="goal-amount"></strong> kr</span>
+          </div>
+          <div class="goal__bar" id="goal-bar" role="progressbar" aria-label="Insamlat mot målet"
+               aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+            <div class="goal__fill" id="goal-fill"></div>
+            <!-- A small candle that follows the end of the bar -->
+            <svg class="goal__marker" id="goal-marker" viewBox="0 0 20 40" aria-hidden="true">
+              <rect x="4" y="16" width="12" height="22" rx="3" style="fill: var(--color-card); stroke: var(--color-accent)" stroke-width="2"/>
+              <path class="goal__flame" d="M10 2 C14 7 15 11 10 15 C5 11 6 7 10 2Z" style="fill: var(--color-glow)"/>
+            </svg>
+          </div>
+          <p class="goal__percent" id="goal-percent"></p>
+        </div>
+
+        <form id="start-form" class="start-form" novalidate>
+          <div class="field">
+            <label for="nickname">Ditt namn (valfritt)</label>
+            <input id="nickname" name="nickname" type="text" minlength="2" maxlength="20"
+                   autocomplete="nickname" aria-describedby="nickname-hint error">
+            <p id="nickname-hint" class="field__hint">Visas på topplistan. Lämnar du det tomt får du ett namn, till exempel Givare1.</p>
+          </div>
+          <p id="error" class="form-error" role="alert"></p>
+          <div class="actions">
+            <button id="play" class="button button--primary" type="submit">Spela (30 sek)</button>
+            <button id="gift" class="link-button" type="button">Jag vill bara ge en gåva</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <ol class="how" aria-label="Så fungerar det">
+      <li class="how__card">
+        <span class="how__number" aria-hidden="true">1</span>
+        <h2>Spela 30 sekunder</h2>
+        <p>Tryck på tändstickor med fri väg. Den röda knoppen visar åt vilket håll de glider. Krock tar ett av dina tre hjärtan.</p>
+      </li>
+      <li class="how__card">
+        <span class="how__number" aria-hidden="true">2</span>
+        <h2>Tänd adventsljusen</h2>
+        <p>Glider den sista stickan åt ett håll ut tänds ljuset där. Varje ljus ger bonuspoäng.</p>
+      </li>
+      <li class="how__card">
+        <span class="how__number" aria-hidden="true">3</span>
+        <h2>Ge en gåva</h2>
+        <p>Betala med Swish: skanna QR-koden på datorn eller tryck på Öppna Swish i mobilen.</p>
+      </li>
+    </ol>
+
+    <p class="footnote">Simulerad kampanj – ingen riktig betalning</p>
   </main>
   <script type="module" src="js/pages/start.js"></script>
 </body>

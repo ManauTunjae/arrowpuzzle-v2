@@ -1,0 +1,157 @@
+/* Start page. Mobile first, then a wider layout from 768px. Colors only through var(--color-...). */
+main.start-page { max-width: 1120px; }
+
+/* Top bar */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+.topbar__org { display: flex; align-items: center; gap: 12px; margin: 0; font-weight: 600; }
+.logo {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 44px;
+  height: 44px;
+  color: var(--color-card);
+  font-weight: 700;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+.topbar__nav { display: flex; align-items: center; gap: 20px; }
+.topbar__link { font-weight: 600; text-decoration: none; }
+.topbar__link:hover { text-decoration: underline; }
+/* The gift button is only in the top bar on computers. On phones the link under the play button is enough. */
+#gift-top { display: none; }
+
+.button--small { width: auto; margin: 0; padding: 10px 22px; }
+
+/* Picture + text */
+.intro { display: grid; gap: 20px; }
+
+.scene {
+  overflow: hidden;
+  background: var(--color-game-bg);
+  border-radius: 28px;
+  box-shadow: var(--shadow-card);
+  aspect-ratio: 400 / 340;
+}
+.scene svg { display: block; width: 100%; height: 100%; }
+.scene__number { font: 700 28px 'Inter', system-ui, sans-serif; fill: var(--color-accent); }
+
+.intro__text h1 { margin-bottom: 12px; font-size: clamp(2rem, 8vw, 3.25rem); font-weight: 700; }
+.intro__lead { font-size: 1.125rem; line-height: 1.5; }
+
+/* Goal bar */
+.goal { margin: 20px 0 28px; }
+.goal__labels { display: flex; justify-content: space-between; gap: 12px; font-size: 0.9375rem; }
+.goal__bar {
+  position: relative;
+  height: 14px;
+  margin-top: 30px; /* room for the small candle above the bar */
+  background: var(--color-line);
+  border-radius: 999px;
+}
+.goal__fill {
+  width: 0;
+  height: 100%;
+  background: var(--color-accent);
+  border-radius: 999px;
+  transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.goal__marker {
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 20px;
+  height: 40px;
+  transform: translateX(-50%);
+  transition: left 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--color-glow) 70%, transparent));
+}
+.goal__percent { margin: 8px 0 0; font-size: 0.875rem; text-align: center; }
+
+/* Name + buttons */
+.start-form { max-width: 460px; }
+.start-form .field { margin-top: 0; }
+.actions { display: grid; gap: 4px; margin-top: 16px; }
+.actions .button { width: 100%; margin: 0; padding: 18px 28px; font-size: 1.125rem; }
+.link-button {
+  justify-self: center;
+  padding: 12px;
+  font: inherit;
+  font-weight: 600;
+  color: var(--color-primary);
+  text-decoration: underline;
+  background: none;
+  border: 0;
+  cursor: pointer;
+}
+.link-button:hover { text-decoration-thickness: 2px; }
+.link-button:focus-visible { outline: 3px solid var(--color-glow); outline-offset: 2px; border-radius: 6px; }
+.link-button:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* Three short steps */
+.how { display: grid; gap: 12px; margin: 28px 0 0; padding: 0; list-style: none; }
+.how__card {
+  padding: 20px;
+  background: var(--color-card);
+  border: 1px solid var(--color-line);
+  border-radius: 20px;
+  box-shadow: var(--shadow-card);
+}
+.how__card h2 { margin: 10px 0 4px; font-size: 1.125rem; color: var(--color-primary); }
+.how__card p { margin: 0; }
+.how__number {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  color: var(--color-card);
+  font-weight: 700;
+  background: var(--color-primary);
+  border-radius: 50%;
+}
+
+.footnote { margin: 28px 0 8px; font-size: 0.875rem; text-align: center; }
+
+@media (min-width: 768px) {
+  .topbar { margin-bottom: 36px; }
+  #gift-top { display: inline-block; }
+  .intro { grid-template-columns: 1fr 1fr; align-items: center; gap: 56px; }
+  .scene { grid-column: 2; grid-row: 1; }
+  .intro__text { grid-column: 1; grid-row: 1; }
+  .actions { display: flex; align-items: center; gap: 24px; }
+  .actions .button { width: auto; padding: 16px 36px; }
+  .how { grid-template-columns: repeat(3, 1fr); gap: 24px; margin-top: 48px; }
+}
+
+/* Soft movement. Only for people who have not asked for less motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @keyframes flicker {
+    0%, 100% { transform: scale(1) rotate(0); }
+    30% { transform: scale(1.05, 0.95) rotate(-2deg); }
+    60% { transform: scale(0.96, 1.05) rotate(2deg); }
+  }
+  @keyframes pulse { 0%, 100% { opacity: 0.8; } 50% { opacity: 1; } }
+  @keyframes twinkle { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+
+  .scene__flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flicker 1.6s ease-in-out infinite; }
+  .scene__glow { animation: pulse 2.4s ease-in-out infinite; }
+  .scene__stars circle { animation: twinkle 3s ease-in-out infinite; }
+  .scene__stars circle:nth-child(2n) { animation-delay: 1s; }
+  .scene__stars circle:nth-child(3n) { animation-delay: 2s; }
+  .goal__flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flicker 1.3s ease-in-out infinite; }
+
+  .topbar, .scene, .intro__text, .how__card, .footnote { animation: rise 0.5s ease-out backwards; }
+  .intro__text { animation-delay: 0.1s; }
+  .how__card:nth-child(1) { animation-delay: 0.2s; }
+  .how__card:nth-child(2) { animation-delay: 0.3s; }
+  .how__card:nth-child(3) { animation-delay: 0.4s; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .goal__fill, .goal__marker { transition: none; }
+}

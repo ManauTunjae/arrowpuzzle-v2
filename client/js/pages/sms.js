@@ -2,8 +2,8 @@ import { loadCampaign, withCampaign } from '../theme.js';
 import { createLead } from '../api.js';
 import { getToken } from '../player.js';
 
-// No player yet? Go to the nickname page first.
-if (!getToken()) location.replace(withCampaign('name.html'));
+// No player yet? Go to the start page first.
+if (!getToken()) location.replace(withCampaign('index.html'));
 
 const form = document.querySelector('#sms-form');
 const phoneInput = document.querySelector('#phone');
@@ -45,7 +45,7 @@ form.addEventListener('submit', async (event) => {
     location.href = withCampaign('thanks.html');
   } catch (error) {
     if (error.status === 401) {
-      location.replace(withCampaign('name.html')); // token is not valid any more
+      location.replace(withCampaign('index.html')); // token is not valid any more
       return;
     }
     errorEl.textContent = error.message;

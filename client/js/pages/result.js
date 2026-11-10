@@ -4,7 +4,7 @@ import { getNickname, getToken } from '../player.js';
 
 const RESULT_KEY = 'arrowpuzzle.lastResult';
 
-// No player or no result? Go to the game.
+// The page also works without a result (link "Topplista" on the start page).
 function readResult() {
   try {
     return JSON.parse(sessionStorage.getItem(RESULT_KEY));
@@ -13,10 +13,7 @@ function readResult() {
   }
 }
 
-const result = readResult();
-if (!getToken() || !result) {
-  location.replace(withCampaign('play.html'));
-}
+const result = getToken() ? readResult() : null;
 
 const scoreEl = document.querySelector('#score');
 const bestLine = document.querySelector('#best-line');
@@ -25,7 +22,15 @@ const noteEl = document.querySelector('#note');
 const statusEl = document.querySelector('#leaderboard-status');
 const table = document.querySelector('#leaderboard');
 const tbody = table.querySelector('tbody');
-document.querySelector('#again').href = withCampaign('play.html');
+const headingEl = document.querySelector('#heading');
+const orgEl = document.querySelector('#org');
+const againLink = document.querySelector('#again');
+
+// No result: show no name and no score, only the leaderboard.
+document.querySelector('#score-line').hidden = !result;
+// Not a player yet? The start page makes one.
+againLink.href = withCampaign(getToken() ? 'play.html' : 'index.html');
+againLink.textContent = result ? 'Spela igen' : 'Spela';
 
 // The gift page needs a saved game, because the gift is linked to it.
 const donateLink = document.querySelector('#donate');
@@ -58,12 +63,19 @@ function addRow(entry, myName) {
 }
 
 try {
-  await loadCampaign(); // sets the theme colors
+  const campaign = await loadCampaign(); // sets the theme colors
+  if (!result) {
+    // textContent, never innerHTML.
+    headingEl.textContent = campaign.content.title;
+    orgEl.textContent = campaign.orgName;
+    orgEl.hidden = false;
+    document.title = `Topplista – ${campaign.orgName}`;
+  }
   const { leaderboard } = await getLeaderboard(getCampaignSlug());
   if (leaderboard.length === 0) {
     statusEl.textContent = 'Ingen har kommit med på listan än. Bli först!';
   } else {
-    const myName = getNickname();
+    const myName = getToken() ? getNickname() : null;
     for (const entry of leaderboard) addRow(entry, myName);
     statusEl.hidden = true;
     table.hidden = false;

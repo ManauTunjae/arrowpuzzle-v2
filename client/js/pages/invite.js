@@ -4,8 +4,8 @@ import { getToken } from '../player.js';
 
 const RESULT_KEY = 'arrowpuzzle.lastResult';
 
-// No player yet? Go to the nickname page first.
-if (!getToken()) location.replace(withCampaign('name.html'));
+// No player yet? Go to the start page first.
+if (!getToken()) location.replace(withCampaign('index.html'));
 
 const messageEl = document.querySelector('#message');
 const statusEl = document.querySelector('#status');
@@ -40,7 +40,7 @@ try {
   messageEl.value = `${text} ${url}`;
 } catch (error) {
   if (error.status === 401) {
-    location.replace(withCampaign('name.html')); // token is not valid any more
+    location.replace(withCampaign('index.html')); // token is not valid any more
   } else {
     statusEl.textContent = error.message;
     copyBtn.disabled = true;

@@ -30,6 +30,9 @@ export const getCampaign = (slug) =>
 export const createPlayer = (campaignSlug, nickname, inviteCode) =>
   request('/api/players', { method: 'POST', body: { campaignSlug, nickname, inviteCode } });
 
+export const updateNickname = (nickname) =>
+  request('/api/players/me', { method: 'PATCH', body: { nickname } });
+
 export const createInvite = () => request('/api/invites', { method: 'POST' });
 
 export const getMe = () => request('/api/players/me');
@@ -42,6 +45,7 @@ export const finishSession = (id, result) =>
 export const getLeaderboard = (slug) =>
   request(`/api/campaigns/${encodeURIComponent(slug)}/leaderboard`);
 
+// sessionId can be null: a gift without playing.
 export const createDonation = (sessionId, amount, method) =>
   request('/api/donations', { method: 'POST', body: { sessionId, amount, method } });
 

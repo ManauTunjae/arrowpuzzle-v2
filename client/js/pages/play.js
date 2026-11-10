@@ -5,8 +5,8 @@ import { startSession, finishSession } from '../api.js';
 import { createGame } from '../game/game.js';
 import { LEVEL_COUNT } from '../game/levels.js';
 
-// No player yet? Go to the nickname page first.
-if (!getToken()) location.replace(withCampaign('name.html'));
+// No player yet? Go to the start page first.
+if (!getToken()) location.replace(withCampaign('index.html'));
 
 const svg = document.querySelector('#board');
 const scoreEl = document.querySelector('#score');
@@ -114,7 +114,7 @@ startBtn.addEventListener('click', async () => {
   } catch (error) {
     startBtn.disabled = false;
     if (error.status === 401) {
-      location.replace(withCampaign('name.html')); // token is not valid any more
+      location.replace(withCampaign('index.html')); // token is not valid any more
       return;
     }
     messageEl.textContent = error.message;

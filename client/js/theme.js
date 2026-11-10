@@ -33,7 +33,7 @@ export async function loadCampaign() {
   return campaign;
 }
 
-// Keeps the campaign in links between pages: withCampaign('name.html') -> 'name.html?c=norrskenet'
+// Keeps the campaign in links between pages: withCampaign('play.html') -> 'play.html?c=norrskenet'
 export function withCampaign(path) {
   return `${path}?c=${encodeURIComponent(getCampaignSlug())}`;
 }

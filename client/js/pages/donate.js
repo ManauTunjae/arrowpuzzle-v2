@@ -13,11 +13,10 @@ function readResult() {
   }
 }
 
-// A gift is linked to a saved game. Without one, go back to the game.
+// A gift needs a player (the start page makes one). A saved game is optional.
+if (!getToken()) location.replace(withCampaign('index.html'));
 const result = readResult();
-if (!getToken() || !result?.saved || !result.sessionId) {
-  location.replace(withCampaign('play.html'));
-}
+const sessionId = result?.saved && result.sessionId ? result.sessionId : null;
 
 const steps = {
   choose: document.querySelector('#step-choose'),
@@ -89,7 +88,7 @@ form.addEventListener('submit', async (event) => {
 
   continueBtn.disabled = true; // avoid double submit
   try {
-    donation = await createDonation(result.sessionId, Number(chosen.value), isMobile ? 'swish_link' : 'qr');
+    donation = await createDonation(sessionId, Number(chosen.value), isMobile ? 'swish_link' : 'qr');
 
     paySummary.textContent = `${donation.amount} kr till ${campaign.orgName}. Swish-nummer: ${donation.swishNumber} (påhittat).`;
     if (isMobile) {
