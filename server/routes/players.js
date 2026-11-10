@@ -16,12 +16,23 @@ function toPlayerJson(row) {
   };
 }
 
-// POST /api/players  body: { campaignSlug, nickname, inviteCode (optional) } -> { token, player }
+// No name given? Give "Givare1", "Givare2" ... Skip names that are already taken in this campaign.
+function nextGuestName(campaignId) {
+  const count = db.prepare('SELECT COUNT(*) AS n FROM players WHERE campaign_id = ?').get(campaignId).n;
+  const taken = db.prepare('SELECT 1 FROM players WHERE campaign_id = ? AND nickname = ?');
+  let number = count + 1;
+  while (taken.get(campaignId, `Givare${number}`)) number += 1;
+  return `Givare${number}`;
+}
+
+// POST /api/players  body: { campaignSlug, nickname (optional), inviteCode (optional) } -> { token, player }
 router.post('/', (req, res) => {
   const { campaignSlug, nickname, inviteCode } = req.body || {};
 
-  const clean = cleanNickname(nickname);
-  if (!clean) {
+  // Empty nickname is fine (we make one). A nickname that is filled in must be valid.
+  const hasNickname = typeof nickname === 'string' && nickname.trim() !== '';
+  const clean = hasNickname ? cleanNickname(nickname) : null;
+  if (hasNickname && !clean) {
     return res.status(400).json({ error: 'Nickname must be 2-20 characters' });
   }
   if (typeof campaignSlug !== 'string') {
@@ -44,7 +55,7 @@ router.post('/', (req, res) => {
   const token = crypto.randomUUID();
   const result = db
     .prepare('INSERT INTO players (campaign_id, token, nickname, invited_by_code) VALUES (?, ?, ?, ?)')
-    .run(campaign.id, token, clean, invite ? invite.code : null);
+    .run(campaign.id, token, clean || nextGuestName(campaign.id), invite ? invite.code : null);
 
   const player = db.prepare('SELECT * FROM players WHERE id = ?').get(result.lastInsertRowid);
   res.status(201).json({ token, player: toPlayerJson(player) });
@@ -53,6 +64,16 @@ router.post('/', (req, res) => {
 // GET /api/players/me  header: X-Player-Token -> player
 router.get('/me', requirePlayer, (req, res) => {
   res.json(toPlayerJson(req.player));
+});
+
+// PATCH /api/players/me  body: { nickname } -> player
+router.patch('/me', requirePlayer, (req, res) => {
+  const clean = cleanNickname(req.body?.nickname);
+  if (!clean) {
+    return res.status(400).json({ error: 'Nickname must be 2-20 characters' });
+  }
+  db.prepare('UPDATE players SET nickname = ? WHERE id = ?').run(clean, req.player.id);
+  res.json(toPlayerJson({ ...req.player, nickname: clean }));
 });
 
 export default router;

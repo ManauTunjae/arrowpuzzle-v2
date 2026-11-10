@@ -13,6 +13,14 @@ router.get('/:slug', (req, res) => {
     return res.status(404).json({ error: 'Campaign not found' });
   }
 
+  // Only gifts marked as paid count (all gifts are simulated).
+  const raised = db
+    .prepare(
+      `SELECT COALESCE(SUM(amount), 0) AS total
+       FROM donation_intents WHERE campaign_id = ? AND status = 'simulated_paid'`,
+    )
+    .get(row.id).total;
+
   // theme and content are stored as JSON text in SQLite.
   res.json({
     id: row.id,
@@ -20,6 +28,7 @@ router.get('/:slug', (req, res) => {
     orgName: row.org_name,
     swishNumber: row.swish_number,
     goalAmount: row.goal_amount,
+    raisedAmount: raised,
     theme: JSON.parse(row.theme),
     content: JSON.parse(row.content),
   });
