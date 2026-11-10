@@ -105,7 +105,8 @@ const game = createGame({
   },
 });
 
-startBtn.addEventListener('click', async () => {
+// Asks the server for a session (the server saves started_at), then starts the game.
+async function startGame() {
   startBtn.disabled = true; // avoid double click
   messageEl.textContent = '';
   try {
@@ -117,20 +118,29 @@ startBtn.addEventListener('click', async () => {
       location.replace(withCampaign('index.html')); // token is not valid any more
       return;
     }
-    messageEl.textContent = error.message;
+    // Could not start: show the error and a retry button.
+    endText.textContent = error.message;
+    startBtn.hidden = false;
+    overlay.hidden = false;
     return;
   }
   startBtn.disabled = false;
+  startBtn.hidden = true;
   endText.textContent = '';
   overlay.hidden = true;
   game.start();
-});
+}
+
+startBtn.addEventListener('click', startGame);
 
 try {
   await loadCampaign(); // sets the theme colors
 } catch {
   // Game still works with default colors.
 }
+
+// The player pressed "Spela" on the start page, so the game starts right away.
+startGame();
 
 // Back button can show this page again from memory, with the old end screen. Start fresh.
 window.addEventListener('pageshow', (event) => {

@@ -22,10 +22,10 @@
     </div>
     <div class="board-wrap" id="board-wrap">
       <svg id="board" class="game-board" role="group" aria-label="Spelbräde"></svg>
-      <div class="board-overlay" id="overlay">
+      <!-- Hidden at first. Shown when the game ends, or if the game could not start. -->
+      <div class="board-overlay" id="overlay" hidden>
         <p id="end-text" class="board-overlay__text"></p>
-        <p id="hint" class="board-overlay__hint">Tryck på en sticka med fri väg. Krock tar ett av tre hjärtan.</p>
-        <button id="start" class="button" type="button">Starta</button>
+        <button id="start" class="button" type="button" hidden>Försök igen</button>
       </div>
     </div>
     <p id="message" class="game-message" role="status"></p>
