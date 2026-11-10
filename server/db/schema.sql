@@ -51,6 +51,7 @@ CREATE TABLE IF NOT EXISTS donation_intents (
   id           INTEGER PRIMARY KEY AUTOINCREMENT,
   campaign_id  INTEGER NOT NULL REFERENCES campaigns(id),
   session_id   INTEGER REFERENCES game_sessions(id),
+  player_id    INTEGER REFERENCES players(id),
   amount       INTEGER NOT NULL,
   method       TEXT NOT NULL CHECK (method IN ('qr', 'swish_link')),
   status       TEXT NOT NULL DEFAULT 'shown' CHECK (status IN ('shown', 'clicked', 'simulated_paid')),

@@ -7,15 +7,14 @@ import { swishMessage, swishLink, swishQrSvg } from '../services/swishQr.js';
 const router = Router();
 router.use(requirePlayer);
 
-// A donation can only be reached by the player who played the session behind it.
+// A donation can only be reached by the player who gave it.
 function findDonation(id, playerId) {
   return db
     .prepare(
       `SELECT d.*, c.swish_number AS swish_number, c.org_name AS org_name
        FROM donation_intents d
-       JOIN game_sessions gs ON gs.id = d.session_id
        JOIN campaigns c ON c.id = d.campaign_id
-       WHERE d.id = ? AND gs.player_id = ?`,
+       WHERE d.id = ? AND d.player_id = ?`,
     )
     .get(id, playerId);
 }
@@ -42,7 +41,8 @@ function toJson(donation) {
   };
 }
 
-// POST /api/donations  body: { sessionId, amount, method }
+// POST /api/donations  body: { sessionId (optional), amount, method }
+// No sessionId = a gift without playing.
 router.post('/', (req, res) => {
   const { sessionId, amount, method } = req.body || {};
 
@@ -54,19 +54,24 @@ router.post('/', (req, res) => {
     return res.status(400).json({ error: 'Method must be qr or swish_link' });
   }
 
-  // The session must be yours and finished.
-  const session = Number.isInteger(sessionId)
-    ? db
-        .prepare('SELECT * FROM game_sessions WHERE id = ? AND player_id = ? AND finished_at IS NOT NULL')
-        .get(sessionId, req.player.id)
-    : null;
-  if (!session) {
-    return res.status(404).json({ error: 'Session not found' });
+  // With a sessionId, the session must be yours and finished. Without one, the gift is linked only to you.
+  let session = null;
+  if (sessionId !== undefined && sessionId !== null) {
+    session = Number.isInteger(sessionId)
+      ? db
+          .prepare('SELECT * FROM game_sessions WHERE id = ? AND player_id = ? AND finished_at IS NOT NULL')
+          .get(sessionId, req.player.id)
+      : null;
+    if (!session) {
+      return res.status(404).json({ error: 'Session not found' });
+    }
   }
 
   const result = db
-    .prepare('INSERT INTO donation_intents (campaign_id, session_id, amount, method) VALUES (?, ?, ?, ?)')
-    .run(session.campaign_id, session.id, cleanedAmount, method);
+    .prepare(
+      'INSERT INTO donation_intents (campaign_id, session_id, player_id, amount, method) VALUES (?, ?, ?, ?, ?)',
+    )
+    .run(req.player.campaign_id, session ? session.id : null, req.player.id, cleanedAmount, method);
 
   res.status(201).json(toJson(findDonation(result.lastInsertRowid, req.player.id)));
 });
